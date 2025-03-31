@@ -486,7 +486,8 @@
         options.colors[2] = '#eb9500';
         options.annotations.xaxis = annotations
             .filter((v) => v.label.type !== 'wind')
-            .filter((v) => v.label.type !== 'date');
+            .filter((v) => v.label.type !== 'date')
+            .map((v)=>{ v.label.offsetY = -10; return v;});
         options.series[0].data = clouds;
         options.series[1].data = precip;
         options.series[2].data = precip_amount;
