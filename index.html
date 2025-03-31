@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Weather App</title>
+    <!-- <link id="favicon" rel="icon" href="./m3-logo-2-green.png" type="image/png" sizes="16x16"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="128x128" href="./favicon.ico">
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<style>
+    body {
+        /* background-color: #000000cf; */
+        background-color: #121212;
+        color: white;
+        padding: 2%;
+        /* font-family: cursive !important; */
+    }
+
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: Verdana;
+    }
+
+    @media (min-width: 993px) {
+        .w3-modal-content {
+            width: 90%;
+        }
+    }
+
+    .w3-card {
+        min-height: 100px;
+    }
+
+    img {
+        cursor: pointer;
+    }
+</style>
+
+<body class="">
+
+    <div class="w3-container" style="background-color:#007585;">
+        <h2>Weather<div class="w3-medium w3-right w3-padding">Algonac, MI  <!--<span style="margin-left: 5px;margin-right:10px;cursor:pointer;" onclick="window.location=window.location">&#x25BC;</span>--><span class="w3-large" style="margin-left: 10px;cursor:pointer;" onclick="window.location=window.location">&#x27F3;</span></div>
+            <!-- <h6>15d Forecast</h6> -->
+        </h2>
+    </div>
+
+    <div id="tabs" class="w3-bar w3-black">
+    </div>
+
+    <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div>
+    <div id="chart2" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+    <div id="chart3" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+    <div id="chart4" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+
+    <div id="tab-property" class="w3-container city" style="">
+        <div id="detail" class="w3-row" _style="display:flex;flex-wrap:wrap;justify-content:flex-start;">
+        </div>
+    </div>
+
+</body>
+
+<script>
+    chart_range_options = {
+        series: [
+            {
+                type: 'rangeArea',
+                name: 'Temp Range',
+                data: []
+            },
+
+            {
+                type: 'rangeArea',
+                name: 'Gust',
+                data: []
+            },
+
+            {
+                type: 'line',
+                name: 'Temp',
+                data: []
+            },
+            {
+                type: 'line',
+                name: 'Wind',
+                data: []
+            },
+            {
+                type: 'area',
+                name: 'Score',
+                data: []
+            }
+        ],
+        chart: {
+            height: 350,
+            type: 'rangeArea',
+            background: '#000',
+            animations: {
+                speed: 500
+            },
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            },
+        },
+        annotations: {
+            _xaxis: [
+                {
+                    x: 15,
+                    x2: 17,
+                    borderColor: '#000',
+                    opacity: 1,
+                    _offsetY: 40,
+                    label: {
+                        show: true,
+                        text: 'Mon',
+                        position: 'top',
+                        orientation: 'horizontal',
+                        style: {
+                            color: '#fff',
+                            background: '#000',
+                        }
+                    }
+                }
+            ]
+        },
+        _grid: {
+            borderColor: '#f1f1f1',
+            xaxis: {
+                lines: {
+                    show: true
+                }
+            },
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            },
+        },
+        tooltip: {
+            // followCursor: true,
+            enabled: true,
+            // shared: true,
+            // intersect: true,
+            x: {
+                format: 'MM/dd HH:mm',
+            }
+        },
+        theme: {
+            mode: 'dark',
+        },
+        // colors: ['#d4526e', '#33b2df', '#d4526e', '#33b2df'],
+        // colors: ['#34d5eb', '#ed6bda', '#4fd9ff', '#fff', '#7bb380'],
+        colors: ['#34d5eb', '#b0b0b0', '#4fd9ff', '#00b8eb', '#7bb380'],
+        dataLabels: {
+            enabled: false
+        },
+        fill: {
+            opacity: [0.24, 0.24, 1, 1]
+        },
+        _forecastDataPoints: {
+            count: 2
+        },
+        stroke: {
+            curve: 'stepline', // ['smooth', 'stepline', 'stepline', 'stepline', 'stepline', 'stepline'],
+            width: [1, 1, 1, 1, 1]
+        },
+        legend: {
+            show: true,
+            _customLegendItems: ['Team B', 'Team A'],
+            inverseOrder: true
+        },
+        title: {
+            text: 'Range Area with Forecast Line (Combo)'
+        },
+        markers: {
+            hover: {
+                sizeOffset: 5
+            }
+        },
+        xaxis: {
+            type: 'datetime',
+            _tickAmount: 12,
+            labels: {
+                show: false,
+            }
+        },
+        yaxis: {
+        }
+    }
+
+</script>
+<script>
+
+    let config = {
+        noaa: {
+            url: 'https://forecast.weather.gov/MapClick.php?textField1=42.5983&textField2=-82.5004#.Y8v0gHbMK3I',
+            name: 'NOAA',
+            icon: './images/noaa.png',
+        },
+        weather: {
+            url: 'https://api.weather.com/v1/geocode/42.628894/-82.618160/forecast/daily/15day.json?language=en&apiKey=e1f10a1e78da46f5b10a1e78da96f525',
+            url2: 'https://api.weather.com/v1/geocode/42.628894/-82.618160/forecast/hourly/360hour.json?language=en&apiKey=e1f10a1e78da46f5b10a1e78da96f525',
+            name: 'Weather.com',
+            icon: './images/weather.png',
+        },
+    };
+
+    const replaceAll = (text, search, replace) => {
+        while (text.indexOf(search) >= 0) {
+            text = text.replace(search, replace);
+        }
+        return text;
+    }
+    const round = (value, decimals) => {
+        return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+    }
+
+    function openTab(name) {
+        var i;
+        var x = document.getElementsByClassName("w3-bar-item");
+        for (i = 0; i < x.length; i++) {
+            x[i].style.borderBottom = '';
+        }
+        document.getElementById('tab-property').style.display = "none";
+        document.getElementById('tab-property').style.display = "block";
+        document.getElementById('btn-tab-' + name).style.borderBottom = '7px solid #0467b6';
+    }
+
+    // function processConfiguration() {
+    //     // /** create tab buttons and load the first page */
+    //     let html_tabs = ``;
+    //     Object.keys(config).forEach((k, i) => {
+    //         if (k.indexOf('_') !== 0) {
+    //             const tab = k;
+    //             const text = config[k].name;
+    //             let style = 'border-right:0.5px solid #505050;min-width:100px;'
+    //             style += i === 0 ? 'border-bottom:7px solid #0467b6;' : 'border-bottom:7px solid black';
+    //             let html = `<button id="btn-tab-${tab}" class="w3-bar-item w3-button" style="${style}"
+    //                 onclick="openTab('${tab}')">${text}</button>`;
+    //             html_tabs += html;
+    //         }
+    //     });
+    //     document.getElementById('tabs').innerHTML = html_tabs;
+    // }
+
+    let querystring = window.location.search.substring(1);
+    // processConfiguration();
+    getData(config.weather.url).then((daily) => {
+        console.log(JSON.parse(daily));
+
+        getData(config.weather.url2).then((hourly) => {
+            console.log(JSON.parse(hourly));
+            processWeatherCom(daily, hourly);
+        }).catch((error) => {
+            console.error('Error fetching NOAA data:', error);
+        });
+    }).catch((error) => {
+        console.error('Error fetching NOAA data:', error);
+    });
+
+    function getData(url) {
+        return new Promise((resolve, reject) => {
+            fetch(url)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.text();
+                })
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+    function processWeatherCom(daily, hourly) {
+
+        let json = JSON.parse(daily).forecasts;
+        let json2 = JSON.parse(hourly).forecasts[0];
+        let json3 = JSON.parse(hourly).forecasts;
+
+        console.log('json', json);
+        console.log('json3', json3);
+
+        const get_month_day = (date_str) => {
+            const date = new Date(date_str);
+            return {
+                year: date.getFullYear(),
+                month: date.getMonth() + 1,
+                day: date.getDate(),
+                hour: date.getHours(),
+            };
+        }
+        const hour_range = [];
+        const hour_hi = [];
+        const wind_range = [];
+        const wind = [];
+        const score = [];
+        const precip = [];
+        const precip_amount = [];
+        const clouds = [];
+        const dewpoint = [];
+        const baro = [];
+        const relative_humidity = [];
+        const wind_dir = [];
+        const annotations = [];
+        let last_index = 0;
+        let last_wind_dir = '';
+        console.log('precip amount', json3.map((v) => v.qpf))
+        json3.forEach((hour, i) => {
+            const date = get_month_day(hour.fcst_valid_local);
+            const x = new Date(hour.fcst_valid_local);
+            let index = json.map((v) => v.fcst_valid_local).findIndex((v) => v.split('T')[0] === hour.fcst_valid_local.split('T')[0]);
+            hour_range.push({
+                // there is an offset in the day vs hour for min / max temperature
+                x: new Date(x.getTime() + (8 * 60 * 60 * 1000)),
+                y: index >= 0 ? [json[index].min_temp, json[index].max_temp ?? json[index].min_temp] : null
+            });
+            if (x.getHours() === 7) {
+                last_index = index;
+
+                annotations.push({
+                    x: x.getTime(),
+                    label: {
+                        show: true,
+                        offsetY: -12,
+                        position: 'top',
+                        orientation: 'horizontal',
+                        text: hour.dow.substring(0, 3),
+                        borderColor: '#000',
+                        style: {
+                            background: '#000',
+                            color: '#fff',
+                            fontSize: '12px',
+                        }
+                    }
+                });
+                // }
+                annotations.push({
+                    x: x.getTime(),
+                    label: {
+                        type: 'wind',
+                        show: true,
+                        offsetY: -6,
+                        position: 'bottom',
+                        orientation: 'horizontal',
+                        text: hour.wdir_cardinal,
+                        borderColor: '#00000000',
+                        style: {
+                            background: '#00000000',
+                            color: '#fff',
+                            fontSize: '12px',
+                        }
+                    }
+                });
+            }
+            hour_hi.push({
+                x,
+                y: [hour.temp]
+            });
+
+            wind_range.push({
+                x,
+                y: [hour.wspd, hour.gust ?? hour.wspd]
+            });
+            wind.push({
+                x,
+                y: [hour.wspd]
+            });
+            score.push({
+                x,
+                y: [hour.golf_index ? hour.golf_index : 0]
+            });
+
+            precip.push({
+                x,
+                y: [0, hour.pop]
+            });
+            precip_amount.push({
+                x,
+                y: [0, round(hour.qpf / 0.25 * 100, 0)]
+            });
+            clouds.push({
+                x,
+                y: hour.clds
+            });
+            dewpoint.push({
+                x,
+                y: hour.dewpt
+            });
+            baro.push({
+                x,
+                y: round((hour.mslp - 29) / 31 * 1000, 2)
+            });
+            relative_humidity.push({
+                x,
+                y: hour.rh
+            });
+            wind_dir.push({
+                x,
+                y: hour.wdir
+            });
+        });
+
+        console.log('hour_range', hour_range);
+        console.log('hour_hi', hour_hi);
+        console.log('annotations', annotations);
+
+        // /** TEMPERAURE | WIND */
+        let options = JSON.parse(JSON.stringify(chart_range_options));
+        // options.stroke.curve = ['smooth', 'smooth', 'smooth'];
+        options.series = [];
+        options.series.push({
+            name: 'Temp Range',
+            data: []
+        }, {
+            name: 'Wind',
+            data: []
+        }, {
+            type: 'line',
+            name: 'Temp',
+            data: []
+        },);
+        options.title.text = 'Temperature | Wind';
+        options.chart.height = 320;
+        options.xaxis.labels.datetimeUTC = false;
+        options.colors[1] = '#eb9500';
+        options.colors[2] = '#fff';
+        options.annotations.xaxis = annotations;
+        options.series[0].data = hour_range;
+        options.series[1].data = wind_range;
+        options.series[2].data = hour_hi;
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+
+        // /** PRECIPITATION | CLOUDS */
+        options = JSON.parse(JSON.stringify(chart_range_options));
+        options.chart.type = 'area';
+        options.series = [];
+        options.series.push({
+            type: 'area',
+            name: 'Clouds %',
+            data: []
+        }, {
+            type: 'area',
+            name: 'Chance',
+            data: []
+        }, {
+            type: 'area',
+            name: 'Amount 1/4"',
+            data: []
+        },);
+        options.title.text = 'Precipitation | Clouds';
+        options.chart.height = 160;
+        options.xaxis.labels.datetimeUTC = false;
+        options.colors[2] = '#eb9500';
+        options.annotations.xaxis = annotations.filter((v) => v.label.type !== 'wind');
+        options.series[0].data = clouds;
+        options.series[1].data = precip;
+        options.series[2].data = precip_amount;
+        var chart = new ApexCharts(document.querySelector("#chart2"), options);
+        chart.render();
+
+        // /** ATMOSPHERIC CONDITIONS */
+        options = JSON.parse(JSON.stringify(chart_range_options));
+        options.chart.type = 'area';
+        options.series = [];
+        options.series.push({
+            type: 'area',
+            name: 'Dewpoint',
+            data: []
+        }, {
+            type: 'area',
+            name: 'RH',
+            data: []
+        }, {
+            type: 'area',
+            name: 'Pressure',
+            data: []
+        },);
+        options.title.text = 'Atmospheric Conditions';
+        options.chart.height = 160;
+        options.xaxis.labels.datetimeUTC = false;
+        options.colors[2] = '#eb9500';
+        options.annotations.xaxis = annotations.filter((v) => v.label.type !== 'wind');
+        options.series[0].data = dewpoint;
+        options.series[1].data = relative_humidity;
+        options.series[2].data = baro;
+        var chart = new ApexCharts(document.querySelector("#chart3"), options);
+        chart.render();
+
+        // /** WIND DIRECTION */
+        options = JSON.parse(JSON.stringify(chart_range_options));
+        options.chart.type = 'area';
+        options.yaxis.max = 360;
+        options.series = [];
+        options.series.push({
+            type: 'area',
+            name: 'Wind Direction',
+            data: []
+        });
+        options.title.text = 'Wind Direction° (Cardinal)';
+        options.chart.height = 160;
+        options.xaxis.labels.datetimeUTC = false;
+        options.annotations.xaxis = annotations;
+        options.series[0].data = wind_dir;
+        var chart = new ApexCharts(document.querySelector("#chart4"), options);
+        chart.render();
+
+        let html = `<div class="w3-card-4 _w3-margin _w3-white" style="_width:95%;_max-width:400px;">
+            <!--<header class="w3-container w3-light-grey">
+                <h4>${config.weather.name}</h4>
+            </header>-->
+            <div class="w3-container w3-black">`;
+        json.forEach((forecast) => {
+            const date_str = forecast.fcst_valid_local.split('T')[0];
+            const date = {
+                year: date_str.split('-')[0],
+                month: date_str.split('-')[1],
+                day: date_str.split('-')[2],
+            };
+            html += `<p>
+                <b style=color:#34d5eb;>${date.month + '/' + date.day}-  ${forecast.dow}</b>
+                <br/>
+                ${forecast.min_temp}° | ${forecast.max_temp ? forecast.max_temp : json2.temp}°
+                </br>${forecast.narrative}</p>`;
+        });
+        html += `</div></div>`;
+        document.getElementById('detail').innerHTML = html;
+    }
+</script>
+
+</html>
