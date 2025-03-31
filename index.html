@@ -528,6 +528,7 @@
         options = JSON.parse(JSON.stringify(chart_range_options));
         options.chart.type = 'area';
         options.yaxis.max = 360;
+        options.yaxis.min = 0;
         options.series = [];
         options.series.push({
             type: 'area',
