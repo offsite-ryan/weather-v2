@@ -498,7 +498,7 @@
         options.stroke.width[0] = 2;
         // options.annotations.xaxis = annotations
         //     .filter((v) => v.label.type !== 'date');
-        json.map((v) => v.day).forEach((v) => options.series[0].data.push({ x: v.long_daypart_name.substring(0, 3), y: v.golf_index * 10 }));
+        json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[0].data.push({ x: v.long_daypart_name.substring(0, 3), y: v.golf_index * 10 }));
         // json.map((v) => v.day).forEach((v) => options.series[1].data.push({ x: v.long_daypart_name.substring(0, 3), y: v.hi }));
         // options.series[0].data = score;
         // options.series[1].data = golf_score;
@@ -666,7 +666,7 @@
                 <br/>
                 ${forecast.min_temp}° | ${forecast.max_temp ? forecast.max_temp : json2.temp}°
                 </br>${forecast.narrative}
-                </br><b class="" style="color:#34d5eb;">AM:</b> ${forecast.day.narrative}
+                </br><b class="" style="color:#34d5eb;">AM:</b> ${forecast.day ? forecast.day.narrative : ''}
                 </br><b class="" style="color:#34d5eb;">PM</b> ${forecast.night.narrative}
                 </p>`;
         });
