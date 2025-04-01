@@ -256,10 +256,10 @@
     let querystring = window.location.search.substring(1);
     // processConfiguration();
     getData(config.weather.url).then((daily) => {
-        console.log(JSON.parse(daily));
+        // console.log(JSON.parse(daily));
 
         getData(config.weather.url2).then((hourly) => {
-            console.log(JSON.parse(hourly));
+            // console.log(JSON.parse(hourly));
             processWeatherCom(daily, hourly);
         }).catch((error) => {
             console.error('Error fetching NOAA data:', error);
