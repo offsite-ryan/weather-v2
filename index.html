@@ -3,11 +3,11 @@
 
 <head>
     <title>Weather App</title>
-    <!-- <link id="favicon" rel="icon" href="./m3-logo-2-green.png" type="image/png" sizes="16x16"> -->
+    <link id="favicon" rel="icon" href="./favicon-2.png" type="image/png" sizes="16x16">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="apple-touch-icon" sizes="128x128" href="./favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon-2.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="./favicon-2.png">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
@@ -48,8 +48,17 @@
 <body class="">
 
     <div class="w3-container" style="background-color:#007585;">
-        <h2>Weather<div class="w3-medium w3-right w3-padding">Algonac, MI  <!--<span style="margin-left: 5px;margin-right:10px;cursor:pointer;" onclick="window.location=window.location">&#x25BC;</span>--><span class="w3-large" style="margin-left: 10px;cursor:pointer;" onclick="window.location=window.location">&#x27F3;</span></div>
-            <!-- <h6>15d Forecast</h6> -->
+        <h2>Weather<div class="w3-medium w3-right w3-padding">
+                Algonac, MI
+                <!--<span style="margin-left: 5px;margin-right:10px;cursor:pointer;" onclick="window.location=window.location">&#x25BC;</span>-->
+                <span
+                    class="w3-large" style="margin-left: 10px;cursor:pointer;"
+                    onclick="window.location=window.location">&#x27F3;
+                </span>
+                <br/>
+                <span id="datetime" class="w3-medium"></span>
+            </div>
+            <div id="current_conditions" class="w3-medium"></div>
         </h2>
     </div>
 
@@ -57,9 +66,11 @@
     </div>
 
     <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div>
+    <div id="chart1" class="w3-container" style="margin-top:-15px;width:98%;"></div>
     <div id="chart2" class="w3-container" style="margin-top:-15px;width:98%;"></div>
     <div id="chart3" class="w3-container" style="margin-top:-15px;width:98%;"></div>
     <div id="chart4" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+    <div id="chart5" class="w3-container" style="margin-top:-15px;width:98%;"></div>
 
     <div id="tab-property" class="w3-container city" style="">
         <div id="detail" class="w3-row" _style="display:flex;flex-wrap:wrap;justify-content:flex-start;">
@@ -198,6 +209,9 @@
         },
         yaxis: {
             decimalsInFloat: 0,
+            labels: {
+                show: true,
+            }
         }
     }
 
@@ -238,23 +252,6 @@
         document.getElementById('tab-property').style.display = "block";
         document.getElementById('btn-tab-' + name).style.borderBottom = '7px solid #0467b6';
     }
-
-    // function processConfiguration() {
-    //     // /** create tab buttons and load the first page */
-    //     let html_tabs = ``;
-    //     Object.keys(config).forEach((k, i) => {
-    //         if (k.indexOf('_') !== 0) {
-    //             const tab = k;
-    //             const text = config[k].name;
-    //             let style = 'border-right:0.5px solid #505050;min-width:100px;'
-    //             style += i === 0 ? 'border-bottom:7px solid #0467b6;' : 'border-bottom:7px solid black';
-    //             let html = `<button id="btn-tab-${tab}" class="w3-bar-item w3-button" style="${style}"
-    //                 onclick="openTab('${tab}')">${text}</button>`;
-    //             html_tabs += html;
-    //         }
-    //     });
-    //     document.getElementById('tabs').innerHTML = html_tabs;
-    // }
 
     let querystring = window.location.search.substring(1);
     // processConfiguration();
@@ -306,11 +303,23 @@
                 hour: date.getHours(),
             };
         }
+        let html = `${json2.temp}° | ${json2.phrase_32char} | ${json2.gust ? json2.gust : json2.wspd} mph ${json2.wdir_cardinal}`;
+        document.getElementById('current_conditions').innerHTML = html;
+        document.getElementById('datetime').innerHTML = new Date().toLocaleString('en-US', {
+            timeZone: 'America/New_York',
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        });
+
         const hour_range = [];
         const hour_hi = [];
         const wind_range = [];
         const wind = [];
         const score = [];
+        const golf_score = [];
         const precip = [];
         const precip_amount = [];
         const clouds = [];
@@ -321,7 +330,7 @@
         const annotations = [];
         let last_index = 0;
         let last_wind_dir = '';
-        console.log('precip amount', json3.map((v) => v.qpf))
+        
         json3.forEach((hour, i) => {
             const date = get_month_day(hour.fcst_valid_local);
             const x = new Date(hour.fcst_valid_local);
@@ -336,6 +345,8 @@
 
                 annotations.push({
                     x: x.getTime(),
+                    x2: x.getTime() + (12 * 60 * 60 * 1000),
+                    opacity: 0.15,
                     label: {
                         show: true,
                         offsetY: -25,
@@ -344,7 +355,7 @@
                         text: hour.dow.substring(0, 3),
                         borderColor: '#000',
                         style: {
-                            background: '#000',
+                            background: '#000000d6',
                             color: '#fff',
                             fontSize: '12px',
                         }
@@ -398,9 +409,21 @@
                 x,
                 y: [hour.wspd]
             });
+            // let temp = ((hour.temp) - (hour.wspd * 3) - (hour.qpf / 0.25 * 100)) * hour.clds / 33;
+            let temp = 100 - (hour.clds / 2) - hour.pop - ((hour.qpf / 0.25) *100) - (hour.gust > 15 ? hour.gust : 0);
+            // console.log(hour.dow.substring(0, 3) + ' ' + date.day, hour.temp,
+            //     hour.wspd * 3,
+            //     hour.qpf / 0.25 * 100,
+            //     hour.clds,
+            //     temp,
+            // );
             score.push({
                 x,
-                y: [hour.golf_index ? hour.golf_index : 0]
+                y: [round(temp > 0 ? temp : 0, 0)]
+            });
+            golf_score.push({
+                x,
+                y: [round(hour.golf_index * 10, 0)]
             });
 
             precip.push({
@@ -437,8 +460,53 @@
         console.log('hour_hi', hour_hi);
         console.log('annotations', annotations);
 
-        // /** TEMPERAURE | WIND */
+        // /** SCORE */
         let options = JSON.parse(JSON.stringify(chart_range_options));
+        options.plotOptions = {
+            bar: {
+                // borderRadius: 10,
+                // horizontal: true,
+                dataLabels: {
+                    position: 'top', // top, center, bottom
+                },
+            }
+        };
+        options.dataLabels = {
+            enabled: true,
+            offsetY: -20,
+        };
+        options.chart.type = 'bar';
+        options.yaxis.max = 100;
+        options.yaxis.min = 0;
+        options.series = [];
+        options.series.push({
+            type: 'bar',
+            name: 'Score',
+            data: []
+        });
+        // options.chart.sparkline = {
+        //     enabled: false,
+        // };
+        options.title.text = 'Go Fishing Score (0-100)';
+        options.chart.height = 200;
+        options.xaxis.type = 'category';
+        options.xaxis.labels.show = true;
+        // options.xaxis.position = 'top';
+        options.xaxis.labels = { datetimeUTC: false };
+        options.yaxis.labels.show = true;
+        options.colors[1] = '#00eb6a';
+        options.stroke.width[0] = 2;
+        // options.annotations.xaxis = annotations
+        //     .filter((v) => v.label.type !== 'date');
+        json.map((v) => v.day).forEach((v) => options.series[0].data.push({ x: v.long_daypart_name.substring(0, 3), y: v.golf_index * 10 }));
+        // json.map((v) => v.day).forEach((v) => options.series[1].data.push({ x: v.long_daypart_name.substring(0, 3), y: v.hi }));
+        // options.series[0].data = score;
+        // options.series[1].data = golf_score;
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+
+        // /** TEMPERAURE | WIND */
+        options = JSON.parse(JSON.stringify(chart_range_options));
         // options.stroke.curve = ['smooth', 'smooth', 'smooth'];
         options.series = [];
         options.series.push({
@@ -451,7 +519,13 @@
             type: 'line',
             name: 'Temp',
             data: []
-        },);
+        },
+            // {
+            //     type: 'line',
+            //     name: 'Score',
+            //     data: []
+            // },
+        );
         options.title.text = 'Temperature | Wind';
         options.chart.height = 320;
         options.xaxis.labels.datetimeUTC = false;
@@ -461,7 +535,8 @@
         options.series[0].data = hour_range;
         options.series[1].data = wind_range;
         options.series[2].data = hour_hi;
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        // options.series[3].data = score;
+        var chart = new ApexCharts(document.querySelector("#chart1"), options);
         chart.render();
 
         // /** PRECIPITATION | CLOUDS */
@@ -489,7 +564,7 @@
         options.annotations.xaxis = annotations
             .filter((v) => v.label.type !== 'wind')
             .filter((v) => v.label.type !== 'date')
-            .map((v)=>{ v.label.offsetY = -10; return v;});
+            .map((v) => { v.label.offsetY = -10; return v; });
         options.series[0].data = clouds;
         options.series[1].data = precip;
         options.series[2].data = precip_amount;
@@ -544,9 +619,37 @@
             .filter((v) => v.label.type !== 'date');
         options.series[0].data = wind_dir;
         var chart = new ApexCharts(document.querySelector("#chart4"), options);
-        chart.render();
+        // chart.render();
 
-        let html = `<div class="w3-card-4 _w3-margin _w3-white" style="_width:95%;_max-width:400px;">
+
+        // /** SCORE */
+        options = JSON.parse(JSON.stringify(chart_range_options));
+        options.chart.type = 'area';
+        options.yaxis.max = 100;
+        options.yaxis.min = 0;
+        options.series = [];
+        options.series.push({
+            type: 'line',
+            name: 'Score',
+            data: []
+        }, {
+            type: 'area',
+            name: 'Golf Score',
+            data: []
+        });
+        options.title.text = 'Go Fishing Score (0-100)';
+        options.chart.height = 160;
+        options.xaxis.labels.datetimeUTC = false;
+        options.colors[1] = '#00eb6a';
+        options.stroke.width[0] = 2;
+        options.annotations.xaxis = annotations
+            .filter((v) => v.label.type !== 'date');
+        options.series[0].data = score;
+        options.series[1].data = golf_score;
+        var chart = new ApexCharts(document.querySelector("#chart5"), options);
+        // chart.render();
+
+        html = `<div class="w3-card-4 _w3-margin _w3-white" style="_width:95%;_max-width:400px;">
             <!--<header class="w3-container w3-light-grey">
                 <h4>${config.weather.name}</h4>
             </header>-->
@@ -559,10 +662,13 @@
                 day: date_str.split('-')[2],
             };
             html += `<p>
-                <b style=color:#34d5eb;>${date.month + '/' + date.day}-  ${forecast.dow}</b>
+                <b style="color:#34d5eb;">${date.month + '/' + date.day}-  ${forecast.dow}</b>
                 <br/>
                 ${forecast.min_temp}° | ${forecast.max_temp ? forecast.max_temp : json2.temp}°
-                </br>${forecast.narrative}</p>`;
+                </br>${forecast.narrative}
+                </br><b class="" style="color:#34d5eb;">AM:</b> ${forecast.day.narrative}
+                </br><b class="" style="color:#34d5eb;">PM</b> ${forecast.night.narrative}
+                </p>`;
         });
         html += `</div></div>`;
         document.getElementById('detail').innerHTML = html;
