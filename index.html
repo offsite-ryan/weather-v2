@@ -489,6 +489,7 @@
         // };
         options.title.text = 'Go Fishing Score (0-100)';
         options.chart.height = 200;
+        options.legend.show = false;
         options.xaxis.type = 'category';
         options.xaxis.labels.show = true;
         // options.xaxis.position = 'top';
@@ -498,7 +499,7 @@
         options.stroke.width[0] = 2;
         // options.annotations.xaxis = annotations
         //     .filter((v) => v.label.type !== 'date');
-        json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[0].data.push({ x: v.long_daypart_name.substring(0, 3), y: v.golf_index * 10 }));
+        json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[0].data.push({ x: v.long_daypart_name.substring(0, 3), y: (v.golf_index) * 10 }));
         // json.map((v) => v.day).forEach((v) => options.series[1].data.push({ x: v.long_daypart_name.substring(0, 3), y: v.hi }));
         // options.series[0].data = score;
         // options.series[1].data = golf_score;
@@ -528,6 +529,7 @@
         );
         options.title.text = 'Temperature | Wind';
         options.chart.height = 320;
+        // options.legend.offsetY = -295;
         options.xaxis.labels.datetimeUTC = false;
         options.colors[1] = '#eb9500';
         options.colors[2] = '#fff';
@@ -673,6 +675,12 @@
         html += `</div></div>`;
         document.getElementById('detail').innerHTML = html;
     }
+    let last_hour = new Date().getHours();
+    setInterval(()=>{
+        if (last_hour !== new Date().getHours()) {
+            window.location = window.location;
+        }
+    }, 5000)
 </script>
 
 </html>
