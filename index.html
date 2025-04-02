@@ -68,7 +68,7 @@
     <div id="content-map">
         <iframe style="padding-top:20px;margin-left:10%;width:80%;height:750px;"
             src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=12&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true"
-            frameborder="0" onload="setTimeout(()=>{this.src=this.src}, 60 * 1000)"></iframe>
+            frameborder="0" onload="setTimeout(()=>{if (this.parentElement.style.display === 'block') { this.src=this.src}}, 60 * 1000)"></iframe>
     </div>
     <!-- <div class="" style="margin-top:10px;display:flex;">
         <input class="w3-radio" type="radio" name="gender" value="male" checked>
@@ -100,6 +100,7 @@
 </body>
 
 <script>
+    // /** LOCATION SERVICES */
     const successCallback = (position) => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
@@ -282,6 +283,7 @@
         return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
     }
 
+    let activeTab = 'map';
     function openTab(name) {
         var i;
         var x = document.getElementsByClassName("w3-bar-item");
@@ -296,6 +298,7 @@
             document.getElementById(`content-${k}`).style.display = name === k ? 'block' : 'none';
             // document.getElementById('content-detail').style.display = name === 'detail' ? 'block' : 'none';
         });
+        activeTab = name;
     }
 
     const tabs = ['Map', 'Charts', 'Text'];
