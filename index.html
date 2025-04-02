@@ -51,11 +51,10 @@
         <h2>Weather<div class="w3-medium w3-right w3-padding">
                 Algonac, MI
                 <!--<span style="margin-left: 5px;margin-right:10px;cursor:pointer;" onclick="window.location=window.location">&#x25BC;</span>-->
-                <span
-                    class="w3-large" style="margin-left: 10px;cursor:pointer;"
+                <span class="w3-large" style="margin-left: 10px;cursor:pointer;"
                     onclick="window.location=window.location">&#x27F3;
                 </span>
-                <br/>
+                <br />
                 <span id="datetime" class="w3-medium"></span>
             </div>
             <div id="current_conditions" class="w3-medium"></div>
@@ -64,6 +63,20 @@
 
     <div id="tabs" class="w3-bar w3-black">
     </div>
+
+    <!-- <iframe _width="650" _height="450" style="padding-top:25px;margin-left:2%;width:96%;height:500px;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true" frameborder="0"></iframe> -->
+    <iframe style="padding-top:25px;margin-left:2%;width:96%;height:500px;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=9&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true" frameborder="0"></iframe>
+
+    <!-- <div class="" style="margin-top:10px;display:flex;">
+        <input class="w3-radio" type="radio" name="gender" value="male" checked>
+        <label style="padding:10px 15px 0px 5px;">3d</label>
+
+        <input class="w3-radio" type="radio" name="gender" value="female">
+        <label style="padding:10px 15px 0px 5px;">7d</label>
+
+        <input class="w3-radio" type="radio" name="gender" value="">
+        <label style="padding:10px 15px 0px 5px;">15d</label>
+    </div> -->
 
     <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div>
     <div id="chart1" class="w3-container" style="margin-top:-15px;width:98%;"></div>
@@ -330,7 +343,7 @@
         const annotations = [];
         let last_index = 0;
         let last_wind_dir = '';
-        
+
         json3.forEach((hour, i) => {
             const date = get_month_day(hour.fcst_valid_local);
             const x = new Date(hour.fcst_valid_local);
@@ -410,7 +423,7 @@
                 y: [hour.wspd]
             });
             // let temp = ((hour.temp) - (hour.wspd * 3) - (hour.qpf / 0.25 * 100)) * hour.clds / 33;
-            let temp = 100 - (hour.clds / 2) - hour.pop - ((hour.qpf / 0.25) *100) - (hour.gust > 15 ? hour.gust : 0);
+            let temp = 100 - (hour.clds / 2) - hour.pop - ((hour.qpf / 0.25) * 100) - (hour.gust > 15 ? hour.gust : 0);
             // console.log(hour.dow.substring(0, 3) + ' ' + date.day, hour.temp,
             //     hour.wspd * 3,
             //     hour.qpf / 0.25 * 100,
@@ -492,7 +505,6 @@
         options.legend.show = false;
         options.xaxis.type = 'category';
         options.xaxis.labels.show = true;
-        // options.xaxis.position = 'top';
         options.xaxis.labels = { datetimeUTC: false };
         options.yaxis.labels.show = true;
         options.colors[1] = '#00eb6a';
@@ -676,7 +688,7 @@
         document.getElementById('detail').innerHTML = html;
     }
     let last_hour = new Date().getHours();
-    setInterval(()=>{
+    setInterval(() => {
         if (last_hour !== new Date().getHours()) {
             window.location = window.location;
         }
