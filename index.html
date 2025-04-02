@@ -65,8 +65,11 @@
     </div>
 
     <!-- <iframe _width="650" _height="450" style="padding-top:25px;margin-left:2%;width:96%;height:500px;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true" frameborder="0"></iframe> -->
-    <iframe style="padding-top:25px;margin-left:2%;width:96%;height:500px;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=9&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true" frameborder="0"></iframe>
-
+    <div id="content-map">
+        <iframe style="padding-top:25px;margin-left:2%;width:96%;height:850px;"
+            src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=12&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true"
+            frameborder="0"></iframe>
+    </div>
     <!-- <div class="" style="margin-top:10px;display:flex;">
         <input class="w3-radio" type="radio" name="gender" value="male" checked>
         <label style="padding:10px 15px 0px 5px;">3d</label>
@@ -78,20 +81,44 @@
         <label style="padding:10px 15px 0px 5px;">15d</label>
     </div> -->
 
-    <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div>
-    <div id="chart1" class="w3-container" style="margin-top:-15px;width:98%;"></div>
-    <div id="chart2" class="w3-container" style="margin-top:-15px;width:98%;"></div>
-    <div id="chart3" class="w3-container" style="margin-top:-15px;width:98%;"></div>
-    <div id="chart4" class="w3-container" style="margin-top:-15px;width:98%;"></div>
-    <div id="chart5" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+    <div id="content-charts" style="display:none;">
+        <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div>
+        <div id="chart1" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+        <div id="chart2" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+        <div id="chart3" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+        <div id="chart4" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+        <div id="chart5" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+    </div>
 
-    <div id="tab-property" class="w3-container city" style="">
-        <div id="detail" class="w3-row" _style="display:flex;flex-wrap:wrap;justify-content:flex-start;">
+    <div id="content-forecast" style="display:none;">
+        <div id="tab-property" class="w3-container city" style="">
+            <div id="detail" class="w3-row" _style="display:flex;flex-wrap:wrap;justify-content:flex-start;">
+            </div>
         </div>
     </div>
 
 </body>
 
+<script>
+    const successCallback = (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    };
+
+    const errorCallback = (error) => {
+        console.error('Error getting location:', error);
+    };
+
+    const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+    };
+
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
+
+</script>
 <script>
     chart_range_options = {
         series: [
@@ -261,13 +288,36 @@
         for (i = 0; i < x.length; i++) {
             x[i].style.borderBottom = '';
         }
-        document.getElementById('tab-property').style.display = "none";
-        document.getElementById('tab-property').style.display = "block";
-        document.getElementById('btn-tab-' + name).style.borderBottom = '7px solid #0467b6';
+        // document.getElementById('tab-property').style.display = "none";
+        // document.getElementById('tab-property').style.display = "block";
+        document.getElementById('btn-tab-' + name).style.borderBottom = '7px solid #007585';
+        tabs.forEach((k, i) => {
+            k = k.toLowerCase();
+            document.getElementById(`content-${k}`).style.display = name === k ? 'block' : 'none';
+            // document.getElementById('content-detail').style.display = name === 'detail' ? 'block' : 'none';
+        });
+    }
+
+    const tabs = ['Map', 'Charts', 'Forecast'];
+    function processConfiguration() {
+        // /** create tab buttons and load the first page */
+        let html_tabs = ``;
+        tabs.forEach((k, i) => {
+            if (k.indexOf('_') !== 0) {
+                const tab = k.toLowerCase();
+                const text = k;
+                let style = 'border-right:0.5px solid #505050;min-width:100px;'
+                style += i === 0 ? 'border-bottom:7px solid #007585;' : 'border-bottom:7px solid black';
+                let html = `<button id="btn-tab-${tab}" class="w3-bar-item w3-button" style="${style}"
+                    onclick="openTab('${tab}')">${text}</button>`;
+                html_tabs += html;
+            }
+        });
+        document.getElementById('tabs').innerHTML = html_tabs;
     }
 
     let querystring = window.location.search.substring(1);
-    // processConfiguration();
+    processConfiguration();
     getData(config.weather.url).then((daily) => {
         // console.log(JSON.parse(daily));
 
