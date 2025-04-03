@@ -403,6 +403,7 @@
         let last_index = 0;
         let last_wind_dir = '';
 
+        let precip_start = null;
         json3.forEach((hour, i) => {
             const date = get_month_day(hour.fcst_valid_local);
             const x = new Date(hour.fcst_valid_local);
@@ -412,6 +413,32 @@
                 x: new Date(x.getTime() + (8 * 60 * 60 * 1000)),
                 y: index >= 0 ? [json[index].min_temp, json[index].max_temp ?? json[index].min_temp] : null
             });
+            // let precip_amount_value = hour.qpf / 0.25 * 100;
+            // if (!precip_start && precip_amount_value > 0) {
+            //     precip_start = x;
+            // }
+            // if (precip_start && (hour.qpf / 0.25 * 100 === 0)) {
+            //     annotations.push({
+            //         x: precip_start.getTime(),
+            //         x2: new Date(hour.fcst_valid_local).getTime(),
+            //         fillColor: '#62b4f5',
+            //         label: {
+            //             type: 'precip',
+            //             show: false,
+            //             // offsetY: -10,
+            //             // position: 'top',
+            //             // orientation: 'horizontal',
+            //             // text: date.month + '/' + date.day,
+            //             // borderColor: '#000',
+            //             // style: {
+            //             //     background: '#000',
+            //             //     color: '#fff',
+            //             //     fontSize: '12px',
+            //             // }
+            //         }
+            //     });
+            //     precip_start = null;
+            // }
             if (x.getHours() === 7) {
                 last_index = index;
 
@@ -419,6 +446,7 @@
                     x: x.getTime(),
                     x2: x.getTime() + (12 * 60 * 60 * 1000),
                     opacity: 0.15,
+                    strokeDashArray: 0,
                     label: {
                         show: true,
                         offsetY: -25,
@@ -435,6 +463,7 @@
                 });
                 annotations.push({
                     x: x.getTime(),
+                    strokeDashArray: 0,
                     label: {
                         type: 'date',
                         show: true,
@@ -452,6 +481,7 @@
                 });
                 annotations.push({
                     x: x.getTime(),
+                    strokeDashArray: 0,
                     label: {
                         type: 'wind',
                         show: true,
