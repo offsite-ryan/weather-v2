@@ -206,7 +206,7 @@
             // shared: true,
             // intersect: true,
             x: {
-                format: 'MM/dd hh:00 TT',
+                format: 'MM/dd h:mm TT',
             }
         },
         theme: {
@@ -385,7 +385,7 @@
         const hour_hi = [];
         const wind_range = [];
         const wind = [];
-        const score = [];
+        // const score = [];
         const golf_score = [];
         const precip = [];
         const precip_amount = [];
@@ -477,17 +477,17 @@
                 y: [hour.wspd]
             });
             // let temp = ((hour.temp) - (hour.wspd * 3) - (hour.qpf / 0.25 * 100)) * hour.clds / 33;
-            let temp = 100 - (hour.clds / 2) - hour.pop - ((hour.qpf / 0.25) * 100) - (hour.gust > 15 ? hour.gust : 0);
-            // console.log(hour.dow.substring(0, 3) + ' ' + date.day, hour.temp,
-            //     hour.wspd * 3,
-            //     hour.qpf / 0.25 * 100,
-            //     hour.clds,
-            //     temp,
-            // );
-            score.push({
-                x,
-                y: [round(temp > 0 ? temp : 0, 0)]
-            });
+            // let temp = 100 - (hour.clds / 2) - hour.pop - ((hour.qpf / 0.25) * 100) - (hour.gust > 15 ? hour.gust : 0);
+            // // console.log(hour.dow.substring(0, 3) + ' ' + date.day, hour.temp,
+            // //     hour.wspd * 3,
+            // //     hour.qpf / 0.25 * 100,
+            // //     hour.clds,
+            // //     temp,
+            // // );
+            // score.push({
+            //     x,
+            //     y: [round(temp > 0 ? temp : 0, 0)]
+            // });
             golf_score.push({
                 x,
                 y: [round(hour.golf_index * 10, 0)]
@@ -548,7 +548,11 @@
         options.series = [];
         options.series.push({
             type: 'bar',
-            name: 'Score',
+            name: 'Golf Score',
+            data: []
+        },{
+            type: 'bar',
+            name: 'Fish Score',
             data: []
         });
         // options.chart.sparkline = {
@@ -556,7 +560,8 @@
         // };
         options.title.text = 'Go Fishing Score (0-100)';
         options.chart.height = 200;
-        options.legend.show = false;
+        // options.legend.show = false;
+        options.legend.inverseOrder = false;
         options.xaxis.type = 'category';
         options.xaxis.labels.show = true;
         options.xaxis.labels = { datetimeUTC: false };
@@ -566,13 +571,16 @@
         // options.annotations.xaxis = annotations
         //     .filter((v) => v.label.type !== 'date');
         json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[0].data.push({ x: v.long_daypart_name.substring(0, 3), y: (v.golf_index) * 10 }));
-        // json.map((v) => v.day).forEach((v) => options.series[1].data.push({ x: v.long_daypart_name.substring(0, 3), y: v.hi }));
-        // options.series[0].data = score;
-        // options.series[1].data = golf_score;
+        json.forEach((v) => options.series[1].data.push(
+            { 
+                x: v.dow.substring(0, 3),
+                y: 100 - (v.day?.gust > 15 ? 25 : 0) - (v.min_temp < 40 ? 25 : 0) - (v.day?.qpf > 0 ? 25 : 0) - (v.day?.clds > 70 ? 25 : 0)
+            }
+        ));
         var chart = new ApexCharts(document.querySelector("#chart"), options);
         chart.render();
 
-        // /** TEMPERAURE | WIND */
+        // /** TEMPERATURE | WIND */
         options = JSON.parse(JSON.stringify(chart_range_options));
         // options.stroke.curve = ['smooth', 'smooth', 'smooth'];
         options.series = [];
