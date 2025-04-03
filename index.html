@@ -49,7 +49,8 @@
 <body class="">
 
     <div class="w3-container" style="background-color:#007585;">
-        <h2>Weather<span class="w3-tiny w3-text-light-grey"> v2.1</span><div class="w3-medium w3-right w3-padding">
+        <h2>Weather<span class="w3-tiny w3-text-light-grey"> v2.1</span>
+            <div class="w3-medium w3-right w3-padding">
                 Algonac, MI
                 <!--<span style="margin-left: 5px;margin-right:10px;cursor:pointer;" onclick="window.location=window.location">&#x25BC;</span>-->
                 <span class="w3-large" style="margin-left: 10px;cursor:pointer;"
@@ -61,7 +62,7 @@
             <div id="current_conditions" class="w3-medium"></div>
         </h2>
     </div>
-    
+
     <div id="tabs" class="w3-bar w3-black">
         <!-- <div class="w3-right w3-hide-small" style="margin-top:10px;display:flex;">
             <input class="w3-radio" type="radio" name="gender" value="male" checked>
@@ -79,7 +80,8 @@
     <div id="content-map">
         <iframe style="padding-top:20px;margin-left:10%;width:80%;height:750px;"
             src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=12&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true"
-            frameborder="0" onload="setTimeout(()=>{if (this.parentElement.style.display === 'block') { this.src=this.src}}, 60 * 1000)"></iframe>
+            frameborder="0"
+            onload="setTimeout(()=>{if (this.parentElement.style.display === 'block') { this.src=this.src}}, 60 * 1000)"></iframe>
     </div>
 
     <div id="content-charts" style="display:none;">
@@ -550,7 +552,7 @@
             type: 'bar',
             name: 'Golf Score',
             data: []
-        },{
+        }, {
             type: 'bar',
             name: 'Fish Score',
             data: []
@@ -572,9 +574,14 @@
         //     .filter((v) => v.label.type !== 'date');
         json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[0].data.push({ x: v.long_daypart_name.substring(0, 3), y: (v.golf_index) * 10 }));
         json.forEach((v) => options.series[1].data.push(
-            { 
+            {
                 x: v.dow.substring(0, 3),
-                y: 100 - (v.day?.gust > 15 ? 25 : 0) - (v.min_temp < 40 ? 25 : 0) - (v.day?.qpf > 0 ? 25 : 0) - (v.day?.clds > 70 ? 25 : 0)
+                y: 100
+                    - (v.day?.gust > 15 ? 20 : 0)
+                    - (v.min_temp < 40 ? 20 : (v.min_temp < 50 ? 15 : 0))
+                    - (v.max_temp < 50 ? 20 : (v.max_temp < 50 ? 15 : 0))
+                    - (v.day?.qpf > 0 ? 20 : 0)
+                    - (v.day?.clds > 70 ? 20 : 0)
             }
         ));
         var chart = new ApexCharts(document.querySelector("#chart"), options);
@@ -678,51 +685,51 @@
         chart.render();
 
         // /** WIND DIRECTION */
-        options = JSON.parse(JSON.stringify(chart_range_options));
-        options.chart.type = 'area';
-        options.yaxis.max = 360;
-        options.yaxis.min = 0;
-        options.series = [];
-        options.series.push({
-            type: 'area',
-            name: 'Wind Direction',
-            data: []
-        });
-        options.title.text = 'Wind Direction (Compass Degrees)';
-        options.chart.height = 160;
-        options.xaxis.labels.datetimeUTC = false;
-        options.annotations.xaxis = annotations
-            .filter((v) => v.label.type !== 'date');
-        options.series[0].data = wind_dir;
-        var chart = new ApexCharts(document.querySelector("#chart4"), options);
+        // options = JSON.parse(JSON.stringify(chart_range_options));
+        // options.chart.type = 'area';
+        // options.yaxis.max = 360;
+        // options.yaxis.min = 0;
+        // options.series = [];
+        // options.series.push({
+        //     type: 'area',
+        //     name: 'Wind Direction',
+        //     data: []
+        // });
+        // options.title.text = 'Wind Direction (Compass Degrees)';
+        // options.chart.height = 160;
+        // options.xaxis.labels.datetimeUTC = false;
+        // options.annotations.xaxis = annotations
+        //     .filter((v) => v.label.type !== 'date');
+        // options.series[0].data = wind_dir;
+        // var chart = new ApexCharts(document.querySelector("#chart4"), options);
         // chart.render();
 
 
         // /** SCORE */
-        options = JSON.parse(JSON.stringify(chart_range_options));
-        options.chart.type = 'area';
-        options.yaxis.max = 100;
-        options.yaxis.min = 0;
-        options.series = [];
-        options.series.push({
-            type: 'line',
-            name: 'Score',
-            data: []
-        }, {
-            type: 'area',
-            name: 'Golf Score',
-            data: []
-        });
-        options.title.text = 'Go Fishing Score (0-100)';
-        options.chart.height = 160;
-        options.xaxis.labels.datetimeUTC = false;
-        options.colors[1] = '#00eb6a';
-        options.stroke.width[0] = 2;
-        options.annotations.xaxis = annotations
-            .filter((v) => v.label.type !== 'date');
-        options.series[0].data = score;
-        options.series[1].data = golf_score;
-        var chart = new ApexCharts(document.querySelector("#chart5"), options);
+        // options = JSON.parse(JSON.stringify(chart_range_options));
+        // options.chart.type = 'area';
+        // options.yaxis.max = 100;
+        // options.yaxis.min = 0;
+        // options.series = [];
+        // options.series.push({
+        //     type: 'line',
+        //     name: 'Score',
+        //     data: []
+        // }, {
+        //     type: 'area',
+        //     name: 'Golf Score',
+        //     data: []
+        // });
+        // options.title.text = 'Go Fishing Score (0-100)';
+        // options.chart.height = 160;
+        // options.xaxis.labels.datetimeUTC = false;
+        // options.colors[1] = '#00eb6a';
+        // options.stroke.width[0] = 2;
+        // options.annotations.xaxis = annotations
+        //     .filter((v) => v.label.type !== 'date');
+        // options.series[0].data = score;
+        // options.series[1].data = golf_score;
+        // var chart = new ApexCharts(document.querySelector("#chart5"), options);
         // chart.render();
 
         html = `<div class="w3-card-4 _w3-margin _w3-white" style="_width:95%;_max-width:400px;">
