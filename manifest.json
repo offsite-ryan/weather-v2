@@ -1,0 +1,42 @@
+{
+    "name": "Weather",
+    "short_name": "Weather",
+    "start_url": "/weather-v2/",
+    "display": "standalone",
+    "background_color": "#2196F3",
+    "description": "weather app to find good fishing days",
+    "icons": [
+        {
+            "src": "./favicon-2.png",
+            "type": "image/png",
+            "sizes": "128x128"
+        }
+    ],
+    "#icons": [
+        {
+            "src": "./weather-app_128.png",
+            "type": "image/png",
+            "sizes": "128x128"
+        },
+        {
+            "src": "./weather-app_152.png",
+            "type": "image/png",
+            "sizes": "152x152"
+        },
+        {
+            "src": "./weather-app_144.png",
+            "type": "image/png",
+            "sizes": "144x144"
+        },
+        {
+            "src": "./weather-app_192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "./weather-app_512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}
