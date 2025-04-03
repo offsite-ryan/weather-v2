@@ -61,8 +61,18 @@
             <div id="current_conditions" class="w3-medium"></div>
         </h2>
     </div>
-
+    
     <div id="tabs" class="w3-bar w3-black">
+        <!-- <div class="w3-right w3-hide-small" style="margin-top:10px;display:flex;">
+            <input class="w3-radio" type="radio" name="gender" value="male" checked>
+            <label style="padding:10px 15px 0px 5px;">3d</label>
+    
+            <input class="w3-radio" type="radio" name="gender" value="female">
+            <label style="padding:10px 15px 0px 5px;">7d</label>
+    
+            <input class="w3-radio" type="radio" name="gender" value="">
+            <label style="padding:10px 15px 0px 5px;">15d</label>
+        </div> -->
     </div>
 
     <!-- <iframe _width="650" _height="450" style="padding-top:25px;margin-left:2%;width:96%;height:500px;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true" frameborder="0"></iframe> -->
@@ -71,16 +81,6 @@
             src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=12&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true"
             frameborder="0" onload="setTimeout(()=>{if (this.parentElement.style.display === 'block') { this.src=this.src}}, 60 * 1000)"></iframe>
     </div>
-    <!-- <div class="" style="margin-top:10px;display:flex;">
-        <input class="w3-radio" type="radio" name="gender" value="male" checked>
-        <label style="padding:10px 15px 0px 5px;">3d</label>
-
-        <input class="w3-radio" type="radio" name="gender" value="female">
-        <label style="padding:10px 15px 0px 5px;">7d</label>
-
-        <input class="w3-radio" type="radio" name="gender" value="">
-        <label style="padding:10px 15px 0px 5px;">15d</label>
-    </div> -->
 
     <div id="content-charts" style="display:none;">
         <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div>
@@ -206,7 +206,7 @@
             // shared: true,
             // intersect: true,
             x: {
-                format: 'MM/dd HH:mm',
+                format: 'MM/dd hh:00 TT',
             }
         },
         theme: {
@@ -317,7 +317,7 @@
                 html_tabs += html;
             }
         });
-        document.getElementById('tabs').innerHTML = html_tabs;
+        document.getElementById('tabs').innerHTML += html_tabs;
     }
 
     let querystring = window.location.search.substring(1);
@@ -649,7 +649,7 @@
             data: []
         }, {
             type: 'area',
-            name: 'RH',
+            name: 'Humidity',
             data: []
         }, {
             type: 'area',
