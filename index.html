@@ -442,6 +442,7 @@
             if (x.getHours() === 7) {
                 last_index = index;
 
+                // /** DOW */
                 annotations.push({
                     x: x.getTime(),
                     x2: x.getTime() + (12 * 60 * 60 * 1000),
@@ -461,6 +462,28 @@
                         }
                     }
                 });
+                
+                // /** TEMP */
+                // annotations.push({
+                //     x: x.getTime(),
+                //     // x2: x.getTime() + (12 * 60 * 60 * 1000),
+                //     opacity: 0.15,
+                //     strokeDashArray: 0,
+                //     label: {
+                //         show: true,
+                //         offsetX: 20,
+                //         offsetY: 5,
+                //         position: 'top',
+                //         orientation: 'horizontal',
+                //         text: index >= 0 ? `${json[index].min_temp}° - ${json[index].max_temp}°` : '',
+                //         borderColor: '#000',
+                //         style: {
+                //             background: '#000000d6',
+                //             color: '#fff',
+                //             fontSize: '12px',
+                //         }
+                //     }
+                // });
                 annotations.push({
                     x: x.getTime(),
                     strokeDashArray: 0,
@@ -534,7 +557,7 @@
             });
             precip_amount.push({
                 x,
-                y: [0, round(hour.qpf / 0.25 * 100, 0)]
+                y: [0, round(hour.qpf / 0.125 * 100, 0)]
             });
             clouds.push({
                 x,
@@ -669,7 +692,7 @@
             data: []
         }, {
             type: 'area',
-            name: 'Amount 1/4"',
+            name: 'Amount 1/8"',
             data: []
         },);
         options.title.text = 'Precipitation | Clouds';
