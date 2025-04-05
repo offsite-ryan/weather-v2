@@ -468,6 +468,11 @@
                     - (v.day?.clds > 70 ? 20 : 0)
             }
         ));
+        options.series[1].data.push(
+            {
+                x: '',
+                y: null
+            });
         var chart = new ApexCharts(document.querySelector("#chart"), options);
         chart.render();
 
