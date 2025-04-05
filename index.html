@@ -57,8 +57,10 @@
             src="https://embed.windy.com/embed.html?type=forecast&location=coordinates&detail=true&detailLat=42.6704896&detailLon=-82.8112896&metricTemp=°F&metricRain=in&metricWind=mph"
             frameborder="0"></iframe>
     </div>
+    <div id="content-overview" style="display:none;">
 
-    <div id="content-charts" style="display:none;">
+    </div>
+    <div id="content-detail" style="display:none;">
         <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div>
         <div id="chart1" class="w3-container" style="margin-top:-15px;width:98%;"></div>
         <div id="chart2" class="w3-container" style="margin-top:-15px;width:98%;"></div>
@@ -145,7 +147,7 @@
         activeTab = name;
     }
 
-    const tabs = ['Map', 'Charts', 'Text'];
+    const tabs = ['Map', /*'Overview',*/ 'Detail', 'Text'];
     function processConfiguration() {
         // /** create tab buttons and load the first page */
         let html_tabs = ``;
@@ -468,11 +470,11 @@
                     - (v.day?.clds > 70 ? 20 : 0)
             }
         ));
-        options.series[1].data.push(
-            {
-                x: '',
-                y: null
-            });
+        // options.series[1].data.push(
+        //     {
+        //         x: '',
+        //         y: null
+        //     });
         var chart = new ApexCharts(document.querySelector("#chart"), options);
         chart.render();
 
