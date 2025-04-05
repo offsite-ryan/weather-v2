@@ -1,0 +1,31 @@
+body {
+    /* background-color: #000000cf; */
+    background-color: #121212;
+    color: white;
+    padding: 2%;
+    /* font-family: cursive !important; */
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: Verdana;
+}
+
+@media (min-width: 993px) {
+    .w3-modal-content {
+        width: 90%;
+    }
+}
+
+.w3-card {
+    min-height: 100px;
+}
+
+img {
+    cursor: pointer;
+}
