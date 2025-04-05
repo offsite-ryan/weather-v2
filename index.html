@@ -638,16 +638,9 @@
                 <br/>
                 ${forecast.min_temp}° | ${forecast.max_temp ? forecast.max_temp : json2.temp}°
                 </br>${forecast.narrative}
-                </br><b class="" style="color:#34d5eb;">AM:</b> ${forecast.day ? forecast.day.narrative : ''}
-                </br><b class="" style="color:#34d5eb;">PM</b> ${forecast.night.narrative}
+                </br><div style="margin-left:10px;"><b class="" style="color:#34d5eb;">AM:</b> ${forecast.day ? forecast.day.narrative : ''}</div>
+                <div style="margin-left:10px;"><b class="" style="color:#34d5eb;">PM</b> ${forecast.night.narrative}</div>
                 </p>
-                
-                <!--<div class="w3-col s5 w3-padding" style="border:1px solid #616161;margin:0px 20px 20px 20px;min-height:150px;max-height:150px;">
-                    <b class="" style="color:#34d5eb;">AM:</b><br/> ${forecast.day ? forecast.day.narrative : ''}
-                </div>
-                <div class="w3-col s5 w3-padding" style="border:1px solid #616161;margin:0px 20px 20px 20px;min-height:150px;max-height:150px;">
-                    <b class="" style="color:#34d5eb;">PM:</b><br/> ${forecast.night.narrative}
-                </div>-->
                 `;
         });
         html += `</div></div>`;
