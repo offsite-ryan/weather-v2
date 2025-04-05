@@ -633,7 +633,7 @@
                 month: date_str.split('-')[1],
                 day: date_str.split('-')[2],
             };
-            html += `<p>
+            html += `<p style="border-top:1px solid #6f6f6f;padding-top:10px;">
                 <b style="color:#34d5eb;">${date.month + '/' + date.day}-  ${forecast.dow}</b>
                 <br/>
                 ${forecast.min_temp}° | ${forecast.max_temp ? forecast.max_temp : json2.temp}°
