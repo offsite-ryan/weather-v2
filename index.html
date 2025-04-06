@@ -269,6 +269,30 @@
             //     });
             //     precip_start = null;
             // }
+            if (x.getHours() === 17) {
+                
+                annotations.push({
+                    x: x.getTime(),
+                    y: hour.temp,
+                    opacity: 0,
+                    strokeDashArray: 0,
+                    label: {
+                        type: 'high',
+                        show: true,
+                        offsetX: 0,
+                        offsetY: 0,
+                        position: 'top',
+                        orientation: 'horizontal',
+                        text: index >= 0 ? `${hour.temp}°` : '',
+                        borderColor: '#00000000',
+                        style: {
+                            background: '#00000000',
+                            color: '#fff',
+                            fontSize: '12px',
+                        }
+                    }
+                });
+            }
             if (x.getHours() === 7) {
                 last_index = index;
 
@@ -284,7 +308,7 @@
                         position: 'top',
                         orientation: 'horizontal',
                         text: hour.dow.substring(0, 3),
-                        borderColor: '#000',
+                        borderColor: '#00000000',
                         style: {
                             background: '#000000d6',
                             color: hour.dow.substring(0, 3) === 'Sat' || hour.dow.substring(0, 3) === 'Sun' ? '#05e1ff' : '#fff',
@@ -316,6 +340,27 @@
                 // });
                 annotations.push({
                     x: x.getTime(),
+                    y: hour.temp,
+                    opacity: 0.15,
+                    strokeDashArray: 0,
+                    label: {
+                        type: 'low',
+                        show: true,
+                        offsetX: 0,
+                        offsetY: 32,
+                        position: 'top',
+                        orientation: 'horizontal',
+                        text: index >= 0 ? `${hour.temp}°` : '',
+                        borderColor: '#00000000',
+                        style: {
+                            background: '#00000000',
+                            color: '#fff',
+                            fontSize: '12px',
+                        }
+                    }
+                });
+                annotations.push({
+                    x: x.getTime(),
                     strokeDashArray: 0,
                     label: {
                         type: 'date',
@@ -338,7 +383,7 @@
                     label: {
                         type: 'wind',
                         show: true,
-                        offsetY: -6,
+                        offsetY: 12,
                         position: 'bottom',
                         orientation: 'horizontal',
                         text: hour.wdir_cardinal,
@@ -505,7 +550,11 @@
         options.xaxis.labels.datetimeUTC = false;
         options.colors[1] = '#eb9500';
         options.colors[2] = '#fff';
-        options.annotations.xaxis = annotations;
+        options.annotations.xaxis = annotations
+            .filter((v) => v.label.type !== 'low')
+            .filter((v) => v.label.type !== 'high');
+        options.annotations.points = annotations
+            .filter((v) => v.label.type === 'low' || v.label.type === 'high');
         options.series[0].data = hour_range;
         options.series[1].data = wind_range;
         options.series[2].data = hour_hi;
@@ -536,6 +585,8 @@
         options.xaxis.labels.datetimeUTC = false;
         options.colors[2] = '#eb9500';
         options.annotations.xaxis = annotations
+            .filter((v) => v.label.type !== 'low')
+            .filter((v) => v.label.type !== 'high')
             .filter((v) => v.label.type !== 'wind')
             .filter((v) => v.label.type !== 'date')
             .map((v) => { v.label.offsetY = -10; return v; });
@@ -567,6 +618,8 @@
         options.xaxis.labels.datetimeUTC = false;
         options.colors[2] = '#eb9500';
         options.annotations.xaxis = annotations
+            .filter((v) => v.label.type !== 'low')
+            .filter((v) => v.label.type !== 'high')
             .filter((v) => v.label.type !== 'wind')
             .filter((v) => v.label.type !== 'date');
         options.series[0].data = dewpoint;
@@ -647,6 +700,8 @@
         });
         html += `</div></div>`;
         document.getElementById('detail').innerHTML = html;
+
+        setTimeout(()=>openTab('detail'), 1000);
     }
     let last_hour = new Date().getHours();
     setInterval(() => {
