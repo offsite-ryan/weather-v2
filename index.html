@@ -240,6 +240,7 @@
         const baro = [];
         const relative_humidity = [];
         const wind_dir = [];
+        const wind_chill = [];
         const annotations = [];
         let last_index = 0;
         let last_wind_dir = '';
@@ -455,6 +456,10 @@
                 x,
                 y: hour.wdir
             });
+            wind_chill.push({
+                x,
+                y: hour.wc
+            });
         });
 
         console.log('hour_range', hour_range);
@@ -539,11 +544,11 @@
             name: 'Temp',
             data: []
         },
-            // {
-            //     type: 'line',
-            //     name: 'Score',
-            //     data: []
-            // },
+            {
+                type: 'line',
+                name: 'Wind Chill',
+                data: []
+            },
         );
         options.title.text = 'Temperature | Wind';
         options.chart.height = 320;
@@ -560,6 +565,7 @@
         options.series[0].data = hour_range;
         options.series[1].data = wind_range;
         options.series[2].data = hour_hi;
+        options.series[3].data = wind_chill;
         // options.series[3].data = score;
         var chart = new ApexCharts(document.querySelector("#chart1"), options);
         chart.render();
