@@ -129,7 +129,7 @@
         return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
     }
 
-    let activeTab = 'map';
+    let activeTab = localStorage.getItem('weather-v2-activeTab') || 'map';
     function openTab(name) {
         var i;
         var x = document.getElementsByClassName("w3-bar-item");
@@ -145,6 +145,7 @@
             // document.getElementById('content-detail').style.display = name === 'detail' ? 'block' : 'none';
         });
         activeTab = name;
+        localStorage.setItem('weather-v2-activeTab', name);
     }
 
     const tabs = ['Map', /*'Overview',*/ 'Detail', 'Text'];
@@ -701,7 +702,8 @@
         html += `</div></div>`;
         document.getElementById('detail').innerHTML = html;
 
-        setTimeout(()=>openTab('detail'), 1000);
+
+        setTimeout(()=>openTab(activeTab), 1000);
     }
     let last_hour = new Date().getHours();
     setInterval(() => {
