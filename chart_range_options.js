@@ -108,7 +108,7 @@ chart_range_options = {
         show: true,
         showForSingleSeries: true,
         _customLegendItems: ['Team B', 'Team A'],
-        inverseOrder: true
+        inverseOrder: false
     },
     title: {
         text: 'Range Area with Forecast Line (Combo)'
