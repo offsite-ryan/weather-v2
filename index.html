@@ -79,6 +79,19 @@
 </body>
 
 <script>
+    function isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+            window.matchMedia("(max-width: 767px)").matches ||
+            'ontouchstart' in window;
+    }
+    console.log('isMobile:', isMobile());
+    if (!isMobile()) {
+        // document.getElementById('settings-panel').style.maxWidth = '500px';
+        // document.getElementById('settings-panel').style.right = '0px';
+    }
+</script>
+
+<script>
     // /** LOCATION SERVICES */
     const successCallback = (position) => {
         const latitude = position.coords.latitude;
@@ -241,6 +254,7 @@
         const relative_humidity = [];
         const wind_dir = [];
         const wind_chill = [];
+        const score = [];
         const annotations = [];
         let last_index = 0;
         let last_wind_dir = '';
@@ -272,7 +286,7 @@
             //     precip_start = null;
             // }
             if (x.getHours() === 17) {
-                
+
                 annotations.push({
                     x: x.getTime(),
                     y: hour.temp,
@@ -412,17 +426,15 @@
                 y: [hour.wspd]
             });
             // let temp = ((hour.temp) - (hour.wspd * 3) - (hour.qpf / 0.25 * 100)) * hour.clds / 33;
-            // let temp = 100 - (hour.clds / 2) - hour.pop - ((hour.qpf / 0.25) * 100) - (hour.gust > 15 ? hour.gust : 0);
-            // // console.log(hour.dow.substring(0, 3) + ' ' + date.day, hour.temp,
-            // //     hour.wspd * 3,
-            // //     hour.qpf / 0.25 * 100,
-            // //     hour.clds,
-            // //     temp,
-            // // );
-            // score.push({
-            //     x,
-            //     y: [round(temp > 0 ? temp : 0, 0)]
-            // });
+            let temp = 100
+                - (hour.day?.wspd > 15 ? 25 : 0)
+                - (hour.temp < 50 ? 25 : (hour.temp < 50 ? 15 : 0))
+                - (hour.qpf > 0 ? 25 : 0)
+                - (hour.clds > 70 ? 25 : 0);
+            score.push({
+                x,
+                y: [round(temp > 0 ? temp : 0, 0)]
+            });
             golf_score.push({
                 x,
                 y: [round(hour.golf_index * 10, 0)]
@@ -434,7 +446,7 @@
             });
             precip_amount.push({
                 x,
-                y: [0, round(hour.qpf / 0.125 * 100, 0)]
+                y: [0, round(hour.qpf / 0.0625 * 100, 0)]
             });
             clouds.push({
                 x,
@@ -493,6 +505,10 @@
             type: 'bar',
             name: 'Fish Score',
             data: []
+        }, {
+            type: 'area',
+            name: 'Precepitation',
+            data: []
         });
         // options.chart.sparkline = {
         //     enabled: false,
@@ -521,11 +537,7 @@
                     - (v.day?.clds > 70 ? 20 : 0)
             }
         ));
-        // options.series[1].data.push(
-        //     {
-        //         x: '',
-        //         y: null
-        //     });
+        // json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[2].data.push({ x: v.long_daypart_name.substring(0, 3), y: (v.qpf) * 100 }));
         var chart = new ApexCharts(document.querySelector("#chart"), options);
         chart.render();
 
@@ -544,14 +556,14 @@
             name: 'Temp',
             data: []
         },
-            {
-                type: 'line',
-                name: 'Wind Chill',
-                data: []
-            },
+        {
+            type: 'line',
+            name: 'Wind Chill',
+            data: []
+        },
         );
         options.title.text = 'Temperature | Wind';
-        options.chart.height = 320;
+        options.chart.height = 480;
         options.yaxis.max = 100;
         // options.legend.offsetY = -295;
         options.xaxis.labels.datetimeUTC = false;
@@ -584,11 +596,11 @@
             data: []
         }, {
             type: 'area',
-            name: 'Amount 1/8"',
+            name: 'Amount 1/16"',
             data: []
         },);
         options.title.text = 'Precipitation | Clouds';
-        options.chart.height = 160;
+        options.chart.height = 250;
         options.yaxis.max = 100;
         options.xaxis.labels.datetimeUTC = false;
         options.colors[2] = '#eb9500';
@@ -637,52 +649,56 @@
         chart.render();
 
         // /** WIND DIRECTION */
-        // options = JSON.parse(JSON.stringify(chart_range_options));
-        // options.chart.type = 'area';
-        // options.yaxis.max = 360;
-        // options.yaxis.min = 0;
-        // options.series = [];
-        // options.series.push({
-        //     type: 'area',
-        //     name: 'Wind Direction',
-        //     data: []
-        // });
-        // options.title.text = 'Wind Direction (Compass Degrees)';
-        // options.chart.height = 160;
-        // options.xaxis.labels.datetimeUTC = false;
-        // options.annotations.xaxis = annotations
-        //     .filter((v) => v.label.type !== 'date');
-        // options.series[0].data = wind_dir;
-        // var chart = new ApexCharts(document.querySelector("#chart4"), options);
-        // chart.render();
+        options = JSON.parse(JSON.stringify(chart_range_options));
+        options.chart.type = 'area';
+        options.yaxis.max = 360;
+        options.yaxis.min = 0;
+        options.series = [];
+        options.series.push({
+            type: 'area',
+            name: 'Wind Direction',
+            data: []
+        });
+        options.title.text = 'Wind Direction (Compass Degrees)';
+        options.chart.height = 160;
+        options.xaxis.labels.datetimeUTC = false;
+        options.annotations.xaxis = annotations
+            .filter((v) => v.label.type !== 'low')
+            .filter((v) => v.label.type !== 'high')
+            .filter((v) => v.label.type !== 'date');
+        options.series[0].data = wind_dir;
+        var chart = new ApexCharts(document.querySelector("#chart4"), options);
+        chart.render();
 
 
         // /** SCORE */
-        // options = JSON.parse(JSON.stringify(chart_range_options));
-        // options.chart.type = 'area';
-        // options.yaxis.max = 100;
-        // options.yaxis.min = 0;
-        // options.series = [];
-        // options.series.push({
-        //     type: 'line',
-        //     name: 'Score',
-        //     data: []
-        // }, {
-        //     type: 'area',
-        //     name: 'Golf Score',
-        //     data: []
-        // });
-        // options.title.text = 'Go Fishing Score (0-100)';
-        // options.chart.height = 160;
-        // options.xaxis.labels.datetimeUTC = false;
-        // options.colors[1] = '#00eb6a';
-        // options.stroke.width[0] = 2;
-        // options.annotations.xaxis = annotations
-        //     .filter((v) => v.label.type !== 'date');
-        // options.series[0].data = score;
-        // options.series[1].data = golf_score;
-        // var chart = new ApexCharts(document.querySelector("#chart5"), options);
-        // chart.render();
+        options = JSON.parse(JSON.stringify(chart_range_options));
+        options.chart.type = 'area';
+        options.yaxis.max = 100;
+        options.yaxis.min = 0;
+        options.series = [];
+        options.series.push({
+            type: 'line',
+            name: 'Fish Score',
+            data: []
+        }, {
+            type: 'area',
+            name: 'Golf Score',
+            data: []
+        });
+        options.title.text = 'Go Fishing Score (0-100)';
+        options.chart.height = 160;
+        options.xaxis.labels.datetimeUTC = false;
+        options.colors[1] = '#00eb6a';
+        options.stroke.width[0] = 2;
+        options.annotations.xaxis = annotations
+            .filter((v) => v.label.type !== 'low')
+            .filter((v) => v.label.type !== 'high')
+            .filter((v) => v.label.type !== 'date');
+        options.series[0].data = score;
+        options.series[1].data = golf_score;
+        var chart = new ApexCharts(document.querySelector("#chart5"), options);
+        chart.render();
 
         html = `<div class="w3-card-4 _w3-margin _w3-white" style="_width:95%;_max-width:400px;">
             <!--<header class="w3-container w3-light-grey">
@@ -710,7 +726,7 @@
         document.getElementById('detail').innerHTML = html;
 
 
-        setTimeout(()=>openTab(activeTab), 1000);
+        setTimeout(() => openTab(activeTab), 1000);
     }
     let last_hour = new Date().getHours();
     setInterval(() => {
