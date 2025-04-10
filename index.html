@@ -6,6 +6,7 @@
     <link id="favicon" rel="icon" href="./favicon-2.png" type="image/png" sizes="16x16">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./style.css">
     <link rel="icon" type="image/x-icon" href="favicon-2.png">
     <link rel="apple-touch-icon" sizes="128x128" href="./favicon-2.png">
@@ -24,7 +25,7 @@
             <div class="w3-medium w3-right w3-padding">
                 Algonac, MI
                 <!--<span style="margin-left: 5px;margin-right:10px;cursor:pointer;" onclick="window.location=window.location">&#x25BC;</span>-->
-                <span class="w3-large" style="margin-left: 10px;cursor:pointer;"
+                <span class="w3-xlarge" style="margin-left: 10px;cursor:pointer;"
                     onclick="window.location=window.location">&#x27F3;
                 </span>
                 <br />
@@ -35,13 +36,13 @@
     </div>
 
     <div id="tabs" class="w3-bar w3-black">
-        <!-- <div class="w3-right w3-hide-small" style="margin-top:10px;display:flex;">
+        <!-- <div class="w3-right _w3-hide-small" style="margin-top:10px;display:flex;">
             <input class="w3-radio" type="radio" name="gender" value="male" checked>
             <label style="padding:10px 15px 0px 5px;">3d</label>
-    
+
             <input class="w3-radio" type="radio" name="gender" value="female">
             <label style="padding:10px 15px 0px 5px;">7d</label>
-    
+
             <input class="w3-radio" type="radio" name="gender" value="">
             <label style="padding:10px 15px 0px 5px;">15d</label>
         </div> -->
@@ -131,6 +132,34 @@
             icon: './images/weather.png',
         },
     };
+    function getWeatherIcon(code, text, hour) {
+        const map = {
+            '3': 'Strong_storms',
+            '4': 'Thunderstorms',
+            '5': 'Rain_snow',
+            '6': 'Rain_sleet',
+            '7': 'Wintry_mix',
+            '8': 'Freezing_drizzle',
+            '9': 'Drizzle',
+            '10': 'Freezing_rain',
+            '11': 'Showers',
+            '12': 'Rain',
+            '13': 'Flurries',
+            '14': 'Snow_showers',
+            '15': 'Blow_drift_snow',
+            '16': 'Snow',
+            '17': 'Hail',
+            '18': 'Sleet',
+            '24': 'Windy',
+            '28': 'Mostly_cloudy_sun',
+            '30': 'Partly_cloudy_sun',
+            '34': 'Fair_mostly_sunny',
+        };
+        // return `https://openweathermap.org/img/wn/${code}d@2x.png`
+        console.log(code, text, hour);
+        return `https://www.ibm.com/docs/en/SSRQLT_suite/images/${map[code] || text}.png`
+        // return `https://api.weather.com/v1/images/icons/${code}.png`
+    }
 
     const replaceAll = (text, search, replace) => {
         while (text.indexOf(search) >= 0) {
@@ -240,21 +269,21 @@
             hour12: true,
         });
 
-        const hour_range = [];
-        const hour_hi = [];
-        const wind_range = [];
-        const wind = [];
+        let hour_range = [];
+        let hour_hi = [];
+        let wind_range = [];
+        let wind = [];
         // const score = [];
-        const golf_score = [];
-        const precip = [];
-        const precip_amount = [];
-        const clouds = [];
-        const dewpoint = [];
-        const baro = [];
-        const relative_humidity = [];
-        const wind_dir = [];
-        const wind_chill = [];
-        const score = [];
+        let golf_score = [];
+        let precip = [];
+        let precip_amount = [];
+        let clouds = [];
+        let dewpoint = [];
+        let baro = [];
+        let relative_humidity = [];
+        let wind_dir = [];
+        let wind_chill = [];
+        let score = [];
         const annotations = [];
         let last_index = 0;
         let last_wind_dir = '';
@@ -306,6 +335,13 @@
                             color: '#fff',
                             fontSize: '12px',
                         }
+                    },
+                    image: {
+                        path: getWeatherIcon(hour.icon_code, hour.phrase_22char, hour),
+                        width: 30,
+                        height: 30,
+                        offsetX: 0,
+                        offsetY: -40,
                     }
                 });
             }
@@ -478,6 +514,24 @@
         console.log('hour_hi', hour_hi);
         console.log('annotations', annotations);
 
+        // /** FILTER NO OF DAYS */
+        const num_days = isMobile() ? 5 : 15;
+        json = json.slice(0, num_days);
+        hour_range = hour_range.slice(0, num_days * 24);
+        wind_range = wind_range.slice(0, num_days * 24);
+        hour_hi = hour_hi.slice(0, num_days * 24);
+        wind_chill = wind_chill.slice(0, num_days * 24);
+        clouds = clouds.slice(0, num_days * 24);
+        precip = precip.slice(0, num_days * 24);
+        precip_amount = precip_amount.slice(0, num_days * 24);
+        dewpoint = dewpoint.slice(0, num_days * 24);
+        relative_humidity = relative_humidity.slice(0, num_days * 24);
+        baro = baro.slice(0, num_days * 24);
+        wind_dir = wind_dir.slice(0, num_days * 24);
+        baro = baro.slice(0, num_days * 24);
+        golf_score = golf_score.slice(0, num_days * 24);
+        score = score.slice(0, num_days * 24);
+
         // /** SCORE */
         let options = JSON.parse(JSON.stringify(chart_range_options));
         options.plotOptions = {
@@ -505,17 +559,9 @@
             type: 'bar',
             name: 'Fish Score',
             data: []
-        }, {
-            type: 'area',
-            name: 'Precepitation',
-            data: []
         });
-        // options.chart.sparkline = {
-        //     enabled: false,
-        // };
         options.title.text = 'Go Fishing Score (0-100)';
         options.chart.height = 200;
-        // options.legend.show = false;
         options.legend.inverseOrder = false;
         options.xaxis.type = 'category';
         options.xaxis.labels.show = true;
@@ -556,11 +602,11 @@
             name: 'Temp',
             data: []
         },
-        {
-            type: 'line',
-            name: 'Wind Chill',
-            data: []
-        },
+            {
+                type: 'line',
+                name: 'Wind Chill',
+                data: []
+            },
         );
         options.title.text = 'Temperature | Wind';
         options.chart.height = 480;
@@ -627,6 +673,7 @@
         }, {
             type: 'area',
             name: 'Humidity',
+            hidden: true,
             data: []
         }, {
             type: 'area',
