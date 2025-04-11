@@ -38,7 +38,7 @@ chart_range_options = {
         toolbar: {
             show: false,
         },
-        _zoom: {
+        zoom: {
             enabled: false,
         },
         toolbar: {

@@ -389,7 +389,7 @@
                         text: hour.dow.substring(0, 3),
                         borderColor: '#00000000',
                         style: {
-                            background: '#000000d6',
+                            background: '#00000000',
                             color: hour.dow.substring(0, 3) === 'Sat' || hour.dow.substring(0, 3) === 'Sun' ? '#05e1ff' : '#fff',
                             fontSize: '12px',
                         }
@@ -450,7 +450,7 @@
                         text: date.month + '/' + date.day,
                         borderColor: '#000',
                         style: {
-                            background: '#000',
+                            background: '#00000000',
                             color: hour.dow.substring(0, 3) === 'Sat' || hour.dow.substring(0, 3) === 'Sun' ? '#05e1ff' : '#fff',
                             fontSize: '12px',
                         }
@@ -475,66 +475,25 @@
                     }
                 });
             }
-            hour_hi.push({
-                x,
-                y: [hour.temp]
-            });
-
-            wind_range.push({
-                x,
-                y: [hour.wspd, hour.gust ?? hour.wspd]
-            });
-            wind.push({
-                x,
-                y: [hour.wspd]
-            });
+            hour_hi.push({ x, y: [hour.temp] });
+            wind_range.push({ x, y: [hour.wspd, hour.gust ?? hour.wspd] });
+            wind.push({ x, y: [hour.wspd] });
             // let temp = ((hour.temp) - (hour.wspd * 3) - (hour.qpf / 0.25 * 100)) * hour.clds / 33;
             let temp = 100
                 - (hour.day?.wspd > 15 ? 25 : 0)
                 - (hour.temp < 50 ? 25 : (hour.temp < 50 ? 15 : 0))
                 - (hour.qpf > 0 ? 25 : 0)
                 - (hour.clds > 70 ? 25 : 0);
-            score.push({
-                x,
-                y: [round(temp > 0 ? temp : 0, 0)]
-            });
-            golf_score.push({
-                x,
-                y: [round(hour.golf_index * 10, 0)]
-            });
-
-            precip.push({
-                x,
-                y: [0, hour.pop]
-            });
-            precip_amount.push({
-                x,
-                y: [0, round(hour.qpf / 0.0625 * 100, 0)]
-            });
-            clouds.push({
-                x,
-                y: hour.clds
-            });
-            dewpoint.push({
-                x,
-                y: hour.dewpt
-            });
-            baro.push({
-                x,
-                y: round((hour.mslp - 29) / 31 * 1000, 2)
-            });
-            relative_humidity.push({
-                x,
-                y: hour.rh
-            });
-            wind_dir.push({
-                x,
-                y: hour.wdir
-            });
-            wind_chill.push({
-                x,
-                y: hour.wc
-            });
+            score.push({ x, y: [round(temp > 0 ? temp : 0, 0)] });
+            golf_score.push({ x, y: [round(hour.golf_index * 10, 0)] });
+            precip.push({ x, y: [0, hour.pop] });
+            precip_amount.push({ x, y: [0, round(hour.qpf / 0.0625 * 100, 0)] });
+            clouds.push({ x, y: hour.clds });
+            dewpoint.push({ x, y: hour.dewpt });
+            baro.push({ x, y: round((hour.mslp - 29) / 31 * 1000, 2) });
+            relative_humidity.push({ x, y: hour.rh });
+            wind_dir.push({ x, y: hour.wdir });
+            wind_chill.push({ x, y: hour.wc });
         });
 
         console.log('hour_range', hour_range);
