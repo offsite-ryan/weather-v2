@@ -38,9 +38,24 @@ chart_range_options = {
         toolbar: {
             show: false,
         },
-        zoom: {
+        _zoom: {
             enabled: false,
         },
+        toolbar: {
+            show: false,
+            offsetX: 0,
+            offsetY: 0,
+            tools: {
+                download: false,
+                selection: false,
+                zoom: false,
+                zoomin: true,
+                zoomout: true,
+                pan: false,
+                //   reset: true | '<img src="/static/icons/reset.png" width="20">',
+                // customIcons: []
+            },
+        }
     },
     annotations: {
         _xaxis: [
