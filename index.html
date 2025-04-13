@@ -587,12 +587,15 @@
             type: 'line',
             name: 'Temp',
             data: []
-        },
-            {
-                type: 'line',
-                name: 'Wind Chill',
-                data: []
-            },
+        }, {
+            type: 'line',
+            name: 'Wind Chill',
+            data: []
+        }, /* {
+            type: 'line',
+            name: 'Clouds',
+            data: []
+        }, */
         );
         options.title.text = 'Temperature | Wind';
         options.chart.height = 480;
@@ -601,6 +604,7 @@
         options.xaxis.labels.datetimeUTC = false;
         options.colors[1] = '#eb9500';
         options.colors[2] = '#fff';
+        options.colors[3] = '#fffb00';
         options.annotations.xaxis = annotations
             .filter((v) => v.label.type !== 'low')
             .filter((v) => v.label.type !== 'high');
@@ -610,6 +614,7 @@
         options.series[1].data = wind_range;
         options.series[2].data = hour_hi;
         options.series[3].data = wind_chill;
+        // options.series[4].data = clouds;
         // options.series[3].data = score;
         var chart = new ApexCharts(document.querySelector("#chart1"), options);
         chart.render();
