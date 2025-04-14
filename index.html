@@ -46,9 +46,10 @@
             <input class="w3-radio" type="radio" name="gender" value="">
             <label style="padding:10px 15px 0px 5px;">15d</label>
         </div> -->
-        <!-- <span class=" w3-right w3-xlarge">
+        <!-- <span class="w3-right w3-xlarge">
+            <span style="margin-bottom:15px;">5 day</span>
             <i class="fa fa-toggle-on w3-xxlarge" style="margin:8px 10px 0px 0px;" aria-hidden="true"></i>
-            <span>7 day</span>
+            <span>15 day</span>
         </span> -->
         <!-- <i class="fa fa-search-minus w3-right w3-xlarge" style="margin:8px 10px 0px 0px;" aria-hidden="true"></i>
         <i class="fa fa-search-plus w3-right w3-xlarge" style="margin:8px 10px 0px 0px;" aria-hidden="true"></i> -->
@@ -487,12 +488,14 @@
             score.push({ x, y: [round(temp > 0 ? temp : 0, 0)] });
             golf_score.push({ x, y: [round(hour.golf_index * 10, 0)] });
             precip.push({ x, y: [0, hour.pop] });
-            precip_amount.push({ x, y: [0, round(hour.qpf / 0.0625 * 100, 0)] });
+            precip_amount.push({ x, y: [0, round(hour.qpf / 0.0625 * 100, 0)], label: hour.qpf });
             clouds.push({ x, y: hour.clds });
             dewpoint.push({ x, y: hour.dewpt });
-            baro.push({ x, y: round((hour.mslp - 29) / 31 * 1000, 2) });
+            baro.push({ x, y: round((hour.mslp - 29) / 31 * 1000, 2), label: hour.mslp });
+            // baro.push({ x, y: round((hour.mslp - 29) / 2.0 * 100, 2) }); // typical range of 29.6 to 30.2 inHg. 
+            // baro.push({ x, y: hour.mslp });
             relative_humidity.push({ x, y: hour.rh });
-            wind_dir.push({ x, y: hour.wdir });
+            wind_dir.push({ x, y: hour.wdir, label: hour.wdir_cardinal });
             wind_chill.push({ x, y: hour.wc });
         });
 
@@ -514,9 +517,15 @@
         relative_humidity = relative_humidity.slice(0, num_days * 24);
         baro = baro.slice(0, num_days * 24);
         wind_dir = wind_dir.slice(0, num_days * 24);
-        baro = baro.slice(0, num_days * 24);
         golf_score = golf_score.slice(0, num_days * 24);
         score = score.slice(0, num_days * 24);
+
+        // /** TOOLTIP FUNCTION */
+        const tooltip_function = (value, { series, seriesIndex, dataPointIndex, w }) => {
+            const label = w.config.series[seriesIndex].data[dataPointIndex].label;
+            // return `${label ? label + ` (${value})` : value}`;
+            return `${label ? label : value}`;
+        };
 
         // /** SCORE */
         let options = JSON.parse(JSON.stringify(chart_range_options));
@@ -650,6 +659,7 @@
         options.series[0].data = clouds;
         options.series[1].data = precip;
         options.series[2].data = precip_amount;
+        options.tooltip.y.formatter = tooltip_function;
         var chart = new ApexCharts(document.querySelector("#chart2"), options);
         chart.render();
 
@@ -683,6 +693,7 @@
         options.series[0].data = dewpoint;
         options.series[1].data = relative_humidity;
         options.series[2].data = baro;
+        options.tooltip.y.formatter = tooltip_function;
         var chart = new ApexCharts(document.querySelector("#chart3"), options);
         chart.render();
 
@@ -705,6 +716,7 @@
             .filter((v) => v.label.type !== 'high')
             .filter((v) => v.label.type !== 'date');
         options.series[0].data = wind_dir;
+        options.tooltip.y.formatter = tooltip_function;
         var chart = new ApexCharts(document.querySelector("#chart4"), options);
         chart.render();
 

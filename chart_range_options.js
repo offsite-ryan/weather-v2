@@ -98,6 +98,11 @@ chart_range_options = {
         // intersect: true,
         x: {
             format: 'MM/dd h:mm TT',
+        },
+        y: {
+            formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+                return value + '*'
+            }
         }
     },
     theme: {
@@ -116,7 +121,7 @@ chart_range_options = {
         count: 2
     },
     stroke: {
-        curve: 'stepline', // ['smooth', 'stepline', 'stepline', 'stepline', 'stepline', 'stepline'],
+        curve: 'smooth', // ['smooth', 'stepline', 'stepline', 'stepline', 'stepline', 'stepline'],
         width: [1, 1, 1, 1, 1]
     },
     legend: {
