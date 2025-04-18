@@ -65,8 +65,7 @@
             src="https://embed.windy.com/embed.html?type=forecast&location=coordinates&detail=true&detailLat=42.6704896&detailLon=-82.8112896&metricTemp=°F&metricRain=in&metricWind=mph"
             frameborder="0"></iframe>
     </div>
-    <div id="content-overview" style="display:none;">
-
+    <div id="content-summary" style="display:none;">
     </div>
     <div id="content-detail" style="display:none;">
         <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div>
@@ -76,7 +75,6 @@
         <div id="chart4" class="w3-container" style="margin-top:-15px;width:98%;"></div>
         <div id="chart5" class="w3-container" style="margin-top:-15px;width:98%;"></div>
     </div>
-
     <div id="content-text" style="display:none;">
         <div id="tab-property" class="w3-container city" style="">
             <div id="detail" class="w3-row" _style="display:flex;flex-wrap:wrap;justify-content:flex-start;">
@@ -218,7 +216,7 @@
         localStorage.setItem('weather-v2-activeTab', name);
     }
 
-    const tabs = ['Map', /*'Overview',*/ 'Detail', 'Text'];
+    const tabs = ['Map', /*'Summary',*/ 'Detail', 'Text'];
     function processConfiguration() {
         // /** create tab buttons and load the first page */
         let html_tabs = ``;
@@ -700,8 +698,8 @@
         // /** WIND DIRECTION */
         options = JSON.parse(JSON.stringify(chart_range_options));
         options.chart.type = 'area';
-        options.yaxis.max = 360;
-        options.yaxis.min = 0;
+        // options.yaxis.max = 360;
+        // options.yaxis.min = 0;
         options.series = [];
         options.series.push({
             type: 'area',
@@ -763,11 +761,12 @@
                 day: date_str.split('-')[2],
             };
             html += `<p style="border-top:1px solid #6f6f6f;padding-top:10px;">
-                <b style="color:#34d5eb;">${date.month + '/' + date.day}-  ${forecast.dow}</b>
+                <img src="${getWeatherIcon(forecast.day.icon_code, forecast.phrase_22char, forecast)}" style="width:40px;height:50px;float:left;margin-right:15px;margin-top:10px;" />
+                <b style="color:#34d5eb;">${forecast.dow} - ${date.month + '/' + date.day}</b>
                 <br/>
                 ${forecast.min_temp}° | ${forecast.max_temp ? forecast.max_temp : json2.temp}°
                 </br>${forecast.narrative}
-                </br><div style="margin-left:10px;"><b class="" style="color:#34d5eb;">AM:</b> ${forecast.day ? forecast.day.narrative : ''}</div>
+                </br><div style="margin-left:10px;"><b class="" style="color:#34d5eb;">AM</b> ${forecast.day ? forecast.day.narrative : ''}</div>
                 <div style="margin-left:10px;"><b class="" style="color:#34d5eb;">PM</b> ${forecast.night.narrative}</div>
                 </p>
                 `;
