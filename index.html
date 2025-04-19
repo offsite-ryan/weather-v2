@@ -71,8 +71,8 @@
     <div id="content-detail" style="display:none;">
         <!-- <div id="chart-boxplot" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
         <!-- <div id="chart-boxplot-wind" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
-
         <!-- <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
+
         <div id="chart1" class="w3-container" style="margin-top: 20px;width:98%;"></div>
         <div id="chart2" class="w3-container" style="margin-top:-15px;width:98%;"></div>
         <div id="chart3" class="w3-container" style="margin-top:-15px;width:98%;"></div>
@@ -657,11 +657,11 @@
             type: 'line',
             name: 'Wind Chill',
             data: []
-        }, /* {
-            type: 'line',
+        }, /*{
+            type: 'area',
             name: 'Clouds',
             data: []
-        }, */
+        },*/
         );
         options.title.text = 'Temperature | Wind';
         options.chart.height = 420;
@@ -671,6 +671,7 @@
         options.colors[1] = '#eb9500';
         options.colors[2] = '#fff';
         options.colors[3] = '#fffb00';
+        // options.colors[4] = '#ffff0020';
         options.annotations.xaxis = annotations
             .filter((v) => v.label.type !== 'low')
             .filter((v) => v.label.type !== 'high');
@@ -680,7 +681,7 @@
         options.series[1].data = wind_range;
         options.series[2].data = hour_hi;
         options.series[3].data = wind_chill;
-        // options.series[4].data = clouds;
+        // options.series[4].data = clouds.map((v)=> { return { x: v.x, y: 100 - v.y } });
         // options.series[3].data = score;
         var chart = new ApexCharts(document.querySelector("#chart1"), options);
         chart.render();
