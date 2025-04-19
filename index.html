@@ -761,7 +761,7 @@
                 day: date_str.split('-')[2],
             };
             html += `<p style="border-top:1px solid #6f6f6f;padding-top:10px;">
-                <img src="${getWeatherIcon(forecast.day.icon_code, forecast.phrase_22char, forecast)}" style="width:40px;height:50px;float:left;margin-right:15px;margin-top:10px;" />
+                <img src="${getWeatherIcon(forecast.day?.icon_code, forecast.phrase_22char, forecast)}" style="width:40px;height:50px;float:left;margin-right:15px;margin-top:10px;display:${forecast.day ? '' : 'none'};" />
                 <b style="color:#34d5eb;">${forecast.dow} - ${date.month + '/' + date.day}</b>
                 <br/>
                 ${forecast.min_temp}° | ${forecast.max_temp ? forecast.max_temp : json2.temp}°
