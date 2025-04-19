@@ -12,6 +12,7 @@
     <link rel="apple-touch-icon" sizes="128x128" href="./favicon-2.png">
     <link rel="manifest" href="./manifest.json">
     <script src="./chart_range_options.js"></script>
+    <script src="./chart_boxplot_options.js"></script>
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
@@ -68,8 +69,11 @@
     <div id="content-summary" style="display:none;">
     </div>
     <div id="content-detail" style="display:none;">
-        <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div>
-        <div id="chart1" class="w3-container" style="margin-top:-15px;width:98%;"></div>
+        <!-- <div id="chart-boxplot" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
+        <!-- <div id="chart-boxplot-wind" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
+
+        <!-- <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
+        <div id="chart1" class="w3-container" style="margin-top: 20px;width:98%;"></div>
         <div id="chart2" class="w3-container" style="margin-top:-15px;width:98%;"></div>
         <div id="chart3" class="w3-container" style="margin-top:-15px;width:98%;"></div>
         <div id="chart4" class="w3-container" style="margin-top:-15px;width:98%;"></div>
@@ -182,7 +186,7 @@
             '43': 'Blizzard',
         };
         // return `https://openweathermap.org/img/wn/${code}d@2x.png`
-        console.log(code, text, hour);
+        // console.log(code, text, hour);
         return `https://www.ibm.com/docs/en/SSRQLT_suite/images/${map[code] || text}.png`
         // return `https://api.weather.com/v1/images/icons/${code}.png`
     }
@@ -525,63 +529,118 @@
             return `${label ? label : value}`;
         };
 
-        // /** SCORE */
-        let options = JSON.parse(JSON.stringify(chart_range_options));
-        options.plotOptions = {
-            bar: {
-                // borderRadius: 10,
-                // horizontal: true,
-                dataLabels: {
-                    position: 'top', // top, center, bottom
-                },
+        const series_data = [];
+        const series_data_wind = [];
+        json3.forEach((hour, i) => {
+            const date = get_month_day(hour.fcst_valid_local);
+            const x = new Date(hour.fcst_valid_local);
+            let index = json.map((v) => v.fcst_valid_local).findIndex((v) => v.split('T')[0] === hour.fcst_valid_local.split('T')[0]);
+            if (index >= 0) {
+                if (date.hour === 17) {
+                    series_data.push({
+                        x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
+                        y: [
+                            json3[i - 10] ? json3[i - 10].wc : json3[i].wc,             // lower candle
+                            json3[i - 10] ? json3[i - 10].hi : json3[i].temp,           // box bottom
+                            json3[i - 5] ? json3[i - 5].temp : json3[i].hi,             // box median
+                            json3[i].wc,                                                // box top
+                            json3[i].hi,                                                // upper candle
+                        ]
+                    });
+                    series_data_wind.push({
+                        x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
+                        y: [
+                            json3[i - 10] ? (json3[i - 10].gust ? json3[i - 10].gust : json3[i - 10].wspd) : (json3[i].gust ? json3[i].gust : json3[i].wspd),             // lower candle
+                            json3[i - 10] ? (json3[i - 10].gust ? json3[i - 10].gust : json3[i - 10].wspd) : (json3[i].gust ? json3[i].gust : json3[i].wspd),           // box bottom
+                            json3[i - 5] ? json3[i - 5].gust ? json3[i - 5].gust : json3[i - 5].wspd : (json3[i].gust ? json3[i].gust : json3[i].wspd),             // box median
+                            json3[i].gust ? json3[i].gust : json3[i].wspd,                                                // box top
+                            json3[i].gust ? json3[i].gust : json3[i].wspd,                                                // upper candle
+                        ]
+                    });
+                }
             }
-        };
-        options.dataLabels = {
-            enabled: true,
-            offsetY: -20,
-        };
-        options.chart.type = 'bar';
-        options.yaxis.max = 100;
-        options.yaxis.min = 0;
-        options.series = [];
-        options.series.push({
-            type: 'bar',
-            name: 'Golf Score',
-            data: []
-        }, {
-            type: 'bar',
-            name: 'Fish Score',
-            data: []
         });
-        options.title.text = 'Go Fishing Score (0-100)';
-        options.chart.height = 200;
-        options.legend.inverseOrder = false;
-        options.xaxis.type = 'category';
-        options.xaxis.labels.show = true;
-        options.xaxis.labels = { datetimeUTC: false };
-        options.yaxis.labels.show = true;
-        options.colors[1] = '#00eb6a';
-        options.stroke.width[0] = 2;
-        // options.annotations.xaxis = annotations
-        //     .filter((v) => v.label.type !== 'date');
-        json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[0].data.push({ x: v.long_daypart_name.substring(0, 3), y: (v.golf_index) * 10 }));
-        json.forEach((v) => options.series[1].data.push(
-            {
-                x: v.dow.substring(0, 3),
-                y: 100
-                    - (v.day?.wspd > 15 ? 20 : 0)
-                    - (v.min_temp < 40 ? 20 : (v.min_temp < 50 ? 15 : 0))
-                    - (v.max_temp < 50 ? 20 : (v.max_temp < 50 ? 15 : 0))
-                    - (v.day?.qpf > 0 ? 20 : 0)
-                    - (v.day?.clds > 70 ? 20 : 0)
-            }
-        ));
-        // json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[2].data.push({ x: v.long_daypart_name.substring(0, 3), y: (v.qpf) * 100 }));
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
+        // console.log(series_data);
+        // let options = JSON.parse(JSON.stringify(chart_boxplot_options));
+        // options.series[0].data = series_data;
+        // // options.series.push({
+        // //     name: 'Wind',
+        // //     type: 'boxPlot',
+        // //     data: series_data_wind
+        // // });
+        // delete options.yaxis.min;
+        // delete options.yaxis.max;
+        // var chart = new ApexCharts(document.querySelector("#chart-boxplot"), options);
+        // chart.render();
+
+        // console.log(series_data);
+        // options = JSON.parse(JSON.stringify(chart_boxplot_options));
+        // options.series[0].data = series_data_wind;
+        // // options.plotOptions.boxPlot.colors.lower = '#05f7f7';
+        // // options.plotOptions.boxPlot.colors.upper = '#f7057e';
+        // options.yaxis.min = 0;
+        // delete options.yaxis.max;
+        // // options.yaxis.max = 40;
+        // var chart = new ApexCharts(document.querySelector("#chart-boxplot-wind"), options);
+        // chart.render();
+
+        // /** SCORE */
+        // let options = JSON.parse(JSON.stringify(chart_range_options));
+        // options.plotOptions = {
+        //     bar: {
+        //         // borderRadius: 10,
+        //         // horizontal: true,
+        //         dataLabels: {
+        //             position: 'top', // top, center, bottom
+        //         },
+        //     }
+        // };
+        // options.dataLabels = {
+        //     enabled: true,
+        //     offsetY: -20,
+        // };
+        // options.chart.type = 'bar';
+        // options.yaxis.max = 100;
+        // options.yaxis.min = 0;
+        // options.series = [];
+        // options.series.push({
+        //     type: 'bar',
+        //     name: 'Golf Score',
+        //     data: []
+        // }, {
+        //     type: 'bar',
+        //     name: 'Fish Score',
+        //     data: []
+        // });
+        // options.title.text = 'Go Fishing Score (0-100)';
+        // options.chart.height = 200;
+        // options.legend.inverseOrder = false;
+        // options.xaxis.type = 'category';
+        // options.xaxis.labels.show = true;
+        // options.xaxis.labels = { datetimeUTC: false };
+        // options.yaxis.labels.show = true;
+        // options.colors[1] = '#00eb6a';
+        // options.stroke.width[0] = 2;
+        // // options.annotations.xaxis = annotations
+        // //     .filter((v) => v.label.type !== 'date');
+        // json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[0].data.push({ x: v.long_daypart_name.substring(0, 3), y: (v.golf_index) * 10 }));
+        // json.forEach((v) => options.series[1].data.push(
+        //     {
+        //         x: v.dow.substring(0, 3),
+        //         y: 100
+        //             - (v.day?.wspd > 15 ? 20 : 0)
+        //             - (v.min_temp < 40 ? 20 : (v.min_temp < 50 ? 15 : 0))
+        //             - (v.max_temp < 50 ? 20 : (v.max_temp < 50 ? 15 : 0))
+        //             - (v.day?.qpf > 0 ? 20 : 0)
+        //             - (v.day?.clds > 70 ? 20 : 0)
+        //     }
+        // ));
+        // // json.filter((v) => v.day).map((v) => v.day).forEach((v) => options.series[2].data.push({ x: v.long_daypart_name.substring(0, 3), y: (v.qpf) * 100 }));
+        // chart = new ApexCharts(document.querySelector("#chart"), options);
+        // // chart.render();
 
         // /** TEMPERATURE | WIND */
-        options = JSON.parse(JSON.stringify(chart_range_options));
+        let options = JSON.parse(JSON.stringify(chart_range_options));
         // options.stroke.curve = ['smooth', 'smooth', 'smooth'];
         options.series = [];
         options.series.push({
@@ -605,7 +664,7 @@
         }, */
         );
         options.title.text = 'Temperature | Wind';
-        options.chart.height = 480;
+        options.chart.height = 500;
         options.yaxis.max = 100;
         // options.legend.offsetY = -295;
         options.xaxis.labels.datetimeUTC = false;
@@ -632,7 +691,7 @@
         options.series = [];
         options.series.push({
             type: 'area',
-            name: 'Clouds %',
+            name: 'Sun %',
             data: []
         }, {
             type: 'area',
@@ -644,7 +703,7 @@
             data: []
         },);
         options.title.text = 'Precipitation | Clouds';
-        options.chart.height = 250;
+        options.chart.height = 270;
         options.yaxis.max = 100;
         options.xaxis.labels.datetimeUTC = false;
         options.colors[2] = '#eb9500';
@@ -680,7 +739,7 @@
             data: []
         },);
         options.title.text = 'Atmospheric Conditions';
-        options.chart.height = 160;
+        options.chart.height = 200;
         options.xaxis.labels.datetimeUTC = false;
         options.colors[2] = '#eb9500';
         options.annotations.xaxis = annotations
@@ -696,57 +755,57 @@
         chart.render();
 
         // /** WIND DIRECTION */
-        options = JSON.parse(JSON.stringify(chart_range_options));
-        options.chart.type = 'area';
-        // options.yaxis.max = 360;
-        // options.yaxis.min = 0;
-        options.series = [];
-        options.series.push({
-            type: 'area',
-            name: 'Wind Direction',
-            data: []
-        });
-        options.title.text = 'Wind Direction (Compass Degrees)';
-        options.chart.height = 160;
-        options.xaxis.labels.datetimeUTC = false;
-        options.annotations.xaxis = annotations
-            .filter((v) => v.label.type !== 'low')
-            .filter((v) => v.label.type !== 'high')
-            .filter((v) => v.label.type !== 'date');
-        options.series[0].data = wind_dir;
-        options.tooltip.y.formatter = tooltip_function;
-        var chart = new ApexCharts(document.querySelector("#chart4"), options);
-        chart.render();
+        // options = JSON.parse(JSON.stringify(chart_range_options));
+        // options.chart.type = 'area';
+        // // options.yaxis.max = 360;
+        // // options.yaxis.min = 0;
+        // options.series = [];
+        // options.series.push({
+        //     type: 'area',
+        //     name: 'Wind Direction',
+        //     data: []
+        // });
+        // options.title.text = 'Wind Direction (Compass Degrees)';
+        // options.chart.height = 160;
+        // options.xaxis.labels.datetimeUTC = false;
+        // options.annotations.xaxis = annotations
+        //     .filter((v) => v.label.type !== 'low')
+        //     .filter((v) => v.label.type !== 'high')
+        //     .filter((v) => v.label.type !== 'date');
+        // options.series[0].data = wind_dir;
+        // options.tooltip.y.formatter = tooltip_function;
+        // var chart = new ApexCharts(document.querySelector("#chart4"), options);
+        // chart.render();
 
 
         // /** SCORE */
-        options = JSON.parse(JSON.stringify(chart_range_options));
-        options.chart.type = 'area';
-        options.yaxis.max = 100;
-        options.yaxis.min = 0;
-        options.series = [];
-        options.series.push({
-            type: 'line',
-            name: 'Fish Score',
-            data: []
-        }, {
-            type: 'area',
-            name: 'Golf Score',
-            data: []
-        });
-        options.title.text = 'Go Fishing Score (0-100)';
-        options.chart.height = 160;
-        options.xaxis.labels.datetimeUTC = false;
-        options.colors[1] = '#00eb6a';
-        options.stroke.width[0] = 2;
-        options.annotations.xaxis = annotations
-            .filter((v) => v.label.type !== 'low')
-            .filter((v) => v.label.type !== 'high')
-            .filter((v) => v.label.type !== 'date');
-        options.series[0].data = score;
-        options.series[1].data = golf_score;
-        var chart = new ApexCharts(document.querySelector("#chart5"), options);
-        chart.render();
+        // options = JSON.parse(JSON.stringify(chart_range_options));
+        // options.chart.type = 'area';
+        // options.yaxis.max = 100;
+        // options.yaxis.min = 0;
+        // options.series = [];
+        // options.series.push({
+        //     type: 'line',
+        //     name: 'Fish Score',
+        //     data: []
+        // }, {
+        //     type: 'area',
+        //     name: 'Golf Score',
+        //     data: []
+        // });
+        // options.title.text = 'Go Fishing Score (0-100)';
+        // options.chart.height = 160;
+        // options.xaxis.labels.datetimeUTC = false;
+        // options.colors[1] = '#00eb6a';
+        // options.stroke.width[0] = 2;
+        // options.annotations.xaxis = annotations
+        //     .filter((v) => v.label.type !== 'low')
+        //     .filter((v) => v.label.type !== 'high')
+        //     .filter((v) => v.label.type !== 'date');
+        // options.series[0].data = score;
+        // options.series[1].data = golf_score;
+        // var chart = new ApexCharts(document.querySelector("#chart5"), options);
+        // chart.render();
 
         html = `<div class="w3-card-4 _w3-margin _w3-white" style="_width:95%;_max-width:400px;">
             <!--<header class="w3-container w3-light-grey">
