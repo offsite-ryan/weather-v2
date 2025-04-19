@@ -501,9 +501,9 @@
             wind_chill.push({ x, y: hour.wc });
         });
 
-        console.log('hour_range', hour_range);
-        console.log('hour_hi', hour_hi);
-        console.log('annotations', annotations);
+        // console.log('hour_range', hour_range);
+        // console.log('hour_hi', hour_hi);
+        // console.log('annotations', annotations);
 
         // /** FILTER NO OF DAYS */
         const num_days = isMobile() ? 5 : 15;
@@ -704,7 +704,7 @@
             data: []
         },);
         options.title.text = 'Precipitation | Clouds';
-        options.chart.height = 200;
+        options.chart.height = 210;
         options.yaxis.max = 100;
         options.xaxis.labels.datetimeUTC = false;
         options.colors[2] = '#eb9500';
@@ -740,7 +740,7 @@
             data: []
         },);
         options.title.text = 'Atmospheric Conditions';
-        options.chart.height = 150;
+        options.chart.height = 160;
         options.xaxis.labels.datetimeUTC = false;
         options.colors[2] = '#eb9500';
         options.annotations.xaxis = annotations
