@@ -58,7 +58,7 @@
 
     <!-- <iframe _width="650" _height="450" style="padding-top:25px;margin-left:2%;width:96%;height:500px;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true" frameborder="0"></iframe> -->
     <div id="content-map">
-        <iframe style="padding-top:20px;margin-left:10%;width:80%;height:680px;"
+        <iframe style="padding-top:20px;margin-left:10%;width:80%;height:580px;"
             src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=12&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=false&message=true"
             frameborder="0"
             _onload="setTimeout(()=>{if (this.parentElement.style.display === 'block') { this.src=this.src}}, 60 * 1000)"></iframe>
@@ -664,7 +664,7 @@
         }, */
         );
         options.title.text = 'Temperature | Wind';
-        options.chart.height = 500;
+        options.chart.height = 420;
         options.yaxis.max = 100;
         // options.legend.offsetY = -295;
         options.xaxis.labels.datetimeUTC = false;
@@ -703,7 +703,7 @@
             data: []
         },);
         options.title.text = 'Precipitation | Clouds';
-        options.chart.height = 270;
+        options.chart.height = 200;
         options.yaxis.max = 100;
         options.xaxis.labels.datetimeUTC = false;
         options.colors[2] = '#eb9500';
@@ -739,7 +739,7 @@
             data: []
         },);
         options.title.text = 'Atmospheric Conditions';
-        options.chart.height = 200;
+        options.chart.height = 150;
         options.xaxis.labels.datetimeUTC = false;
         options.colors[2] = '#eb9500';
         options.annotations.xaxis = annotations
