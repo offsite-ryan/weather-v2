@@ -560,13 +560,13 @@
                             // json3[i - 10] ? (json3[i - 10].gust ? json3[i - 10].gust : json3[i - 10].wspd) : (json3[i].gust ? json3[i].gust : json3[i].wspd),             // lower candle
                             // json3[i - 10] ? (json3[i - 10].gust ? json3[i - 10].gust : json3[i - 10].wspd) : (json3[i].gust ? json3[i].gust : json3[i].wspd),           // box bottom
                             // json3[i - 5] ? json3[i - 5].gust ? json3[i - 5].gust : json3[i - 5].wspd : (json3[i].gust ? json3[i].gust : json3[i].wspd),             // box median
-                            json3[i - 5].gust ? json3[i - 5].gust : json3[i].wspd,                                                // box top
+                            json3[i - 5]?.gust ? json3[i - 5].gust : json3[i].wspd,                                                // box top
                         // json3[i].gust ? json3[i].gust : json3[i].wspd,                                                // upper candle
                         // ]
                     });
                     series_data_clouds.push({
                         x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
-                        y: json3[i - 5].clds ? 100 - json3[i - 5].clds : 100 - json3[i].clds,
+                        y: json3[i - 5]?.clds ? 100 - json3[i - 5].clds : 100 - json3[i].clds,
                     });
                     series_data_precip.push({
                         x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
