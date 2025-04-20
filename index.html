@@ -571,7 +571,7 @@
                     series_data_precip.push({
                         x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
                         // y: round(json[index].qpf * 25, 1),
-                        y: round(json3.filter((v, i2)=>i2 >= i - 5 && i2 <= i).reduce((acc, v) => acc + (v.qpf / 0.5 * 100), 0), 1),
+                        y: round(json3.filter((v, i2)=>i2 >= i - 10 && i2 <= i).reduce((acc, v) => acc + (v.qpf / 1.5 * 100), 0), 1),
                     });
                 }
             }
