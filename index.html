@@ -69,11 +69,11 @@
     <div id="content-summary" style="display:none;">
     </div>
     <div id="content-detail" style="display:none;">
-        <!-- <div id="chart-boxplot" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
+        <div id="chart-boxplot" class="w3-container" style="margin-top:20px;width:98%;"></div>
         <!-- <div id="chart-boxplot-wind" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
         <!-- <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
 
-        <div id="chart1" class="w3-container" style="margin-top: 20px;width:98%;"></div>
+        <div id="chart1" class="w3-container" style="margin-top: -15px;width:98%;"></div>
         <div id="chart2" class="w3-container" style="margin-top:-15px;width:98%;"></div>
         <div id="chart3" class="w3-container" style="margin-top:-15px;width:98%;"></div>
         <div id="chart4" class="w3-container" style="margin-top:-15px;width:98%;"></div>
@@ -521,6 +521,7 @@
         wind_dir = wind_dir.slice(0, num_days * 24);
         golf_score = golf_score.slice(0, num_days * 24);
         score = score.slice(0, num_days * 24);
+        let options = null;
 
         // /** TOOLTIP FUNCTION */
         const tooltip_function = (value, { series, seriesIndex, dataPointIndex, w }) => {
@@ -531,12 +532,17 @@
 
         const series_data = [];
         const series_data_wind = [];
+        const series_data_clouds = [];
+        const series_data_precip = [];
         json3.forEach((hour, i) => {
             const date = get_month_day(hour.fcst_valid_local);
             const x = new Date(hour.fcst_valid_local);
             let index = json.map((v) => v.fcst_valid_local).findIndex((v) => v.split('T')[0] === hour.fcst_valid_local.split('T')[0]);
             if (index >= 0) {
                 if (date.hour === 17) {
+                    json[index]._wc = json3[i - 10]?.wc || json3[0].wc;
+                    json[index]._low = json3[i - 10]?.hi || json3[0].hi;
+                    json[index]._high = json3[i].hi;
                     series_data.push({
                         x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
                         y: [
@@ -549,29 +555,52 @@
                     });
                     series_data_wind.push({
                         x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
-                        y: [
-                            json3[i - 10] ? (json3[i - 10].gust ? json3[i - 10].gust : json3[i - 10].wspd) : (json3[i].gust ? json3[i].gust : json3[i].wspd),             // lower candle
-                            json3[i - 10] ? (json3[i - 10].gust ? json3[i - 10].gust : json3[i - 10].wspd) : (json3[i].gust ? json3[i].gust : json3[i].wspd),           // box bottom
-                            json3[i - 5] ? json3[i - 5].gust ? json3[i - 5].gust : json3[i - 5].wspd : (json3[i].gust ? json3[i].gust : json3[i].wspd),             // box median
-                            json3[i].gust ? json3[i].gust : json3[i].wspd,                                                // box top
-                            json3[i].gust ? json3[i].gust : json3[i].wspd,                                                // upper candle
-                        ]
+                        y:
+                            // [
+                            // json3[i - 10] ? (json3[i - 10].gust ? json3[i - 10].gust : json3[i - 10].wspd) : (json3[i].gust ? json3[i].gust : json3[i].wspd),             // lower candle
+                            // json3[i - 10] ? (json3[i - 10].gust ? json3[i - 10].gust : json3[i - 10].wspd) : (json3[i].gust ? json3[i].gust : json3[i].wspd),           // box bottom
+                            // json3[i - 5] ? json3[i - 5].gust ? json3[i - 5].gust : json3[i - 5].wspd : (json3[i].gust ? json3[i].gust : json3[i].wspd),             // box median
+                            json3[i - 5].gust ? json3[i - 5].gust : json3[i].wspd,                                                // box top
+                        // json3[i].gust ? json3[i].gust : json3[i].wspd,                                                // upper candle
+                        // ]
+                    });
+                    series_data_clouds.push({
+                        x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
+                        y: json3[i - 5].clds ? 100 - json3[i - 5].clds : 100 - json3[i].clds,
+                    });
+                    series_data_precip.push({
+                        x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
+                        // y: round(json[index].qpf * 25, 1),
+                        y: round(json3.filter((v, i2)=>i2 >= i - 5 && i2 <= i).reduce((acc, v) => acc + (v.qpf / 0.5 * 100), 0), 1),
                     });
                 }
             }
         });
-        // console.log(series_data);
-        // let options = JSON.parse(JSON.stringify(chart_boxplot_options));
-        // options.series[0].data = series_data;
-        // // options.series.push({
-        // //     name: 'Wind',
-        // //     type: 'boxPlot',
-        // //     data: series_data_wind
-        // // });
-        // delete options.yaxis.min;
-        // delete options.yaxis.max;
-        // var chart = new ApexCharts(document.querySelector("#chart-boxplot"), options);
-        // chart.render();
+        console.log(series_data);
+        options = JSON.parse(JSON.stringify(chart_boxplot_options));
+        options.series[0].data = series_data;
+        options.series.push({
+            name: 'Wind',
+            type: 'line',
+            color: '#fff',
+            data: series_data_wind
+        });
+        options.series.push({
+            name: 'Sun',
+            type: 'area',
+            color: '#ffff0035',
+            data: series_data_clouds
+        });
+        options.series.push({
+            name: 'Rain',
+            type: 'bar',
+            color: '#00ccff',
+            data: series_data_precip
+        });
+        delete options.yaxis.min;
+        delete options.yaxis.max;
+        var chart = new ApexCharts(document.querySelector("#chart-boxplot"), options);
+        chart.render();
 
         // console.log(series_data);
         // options = JSON.parse(JSON.stringify(chart_boxplot_options));
@@ -640,7 +669,7 @@
         // // chart.render();
 
         // /** TEMPERATURE | WIND */
-        let options = JSON.parse(JSON.stringify(chart_range_options));
+        options = JSON.parse(JSON.stringify(chart_range_options));
         // options.stroke.curve = ['smooth', 'smooth', 'smooth'];
         options.series = [];
         options.series.push({
@@ -824,7 +853,7 @@
                 <img src="${getWeatherIcon(forecast.day?.icon_code, forecast.phrase_22char, forecast)}" style="width:40px;height:50px;float:left;margin-right:15px;margin-top:10px;display:${forecast.day ? '' : 'none'};" />
                 <b style="color:#34d5eb;">${forecast.dow} - ${date.month + '/' + date.day}</b>
                 <br/>
-                ${forecast.min_temp}° | ${forecast.max_temp ? forecast.max_temp : json2.temp}°
+                ${forecast._low}° (${forecast._wc}°) | ${forecast._high}°
                 </br>${forecast.narrative}
                 </br><div style="margin-left:10px;"><b class="" style="color:#34d5eb;">AM</b> ${forecast.day ? forecast.day.narrative : ''}</div>
                 <div style="margin-left:10px;"><b class="" style="color:#34d5eb;">PM</b> ${forecast.night.narrative}</div>
