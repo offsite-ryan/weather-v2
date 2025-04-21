@@ -571,7 +571,13 @@
         });
         console.log(series_data);
         options = JSON.parse(JSON.stringify(chart_boxplot_options));
-        options.series[0].data = series_data;
+        options.series = [];
+        options.series.push({
+            name: 'Temp Range',
+            type: 'boxPlot',
+            // color: '#fff',
+            data: series_data
+        });
         options.series.push({
             name: 'Wind',
             type: 'line',
@@ -670,6 +676,7 @@
             data: []
         }, {
             name: 'Wind Range',
+            type: 'rangeBar',
             data: []
         }, {
             type: 'line',
