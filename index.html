@@ -304,6 +304,12 @@
             hour12: true,
         });
 
+        // /** update page icon */
+        let link = document.querySelector("link[rel*='icon']");
+        if (link) {
+            link.href = getWeatherIcon(json2.icon_code, json2.phrase_22char, json2) + '?' + new Date().getTime();
+        }
+
         let hour_range = [];
         let hour_hi = [];
         let wind_range = [];
