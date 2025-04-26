@@ -97,7 +97,7 @@ chart_range_options = {
         // shared: true,
         // intersect: true,
         x: {
-            format: 'MM/dd h:mm TT',
+            format: 'ddd MM/dd h:mm TT',
         },
         y: {
             formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {

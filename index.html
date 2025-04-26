@@ -31,22 +31,14 @@
                 </span>
                 <br />
                 <span id="datetime" class="w3-medium"></span>
+                <!-- <br />
+                <button class="w3-right w3-button _w3-circle _w3-black">+</button> -->
             </div>
             <div id="current_conditions" class="w3-medium"></div>
         </h2>
     </div>
 
     <div id="tabs" class="w3-bar w3-black">
-        <!-- <div class="w3-right _w3-hide-small" style="margin-top:10px;display:flex;">
-            <input class="w3-radio" type="radio" name="gender" value="male" checked>
-            <label style="padding:10px 15px 0px 5px;">3d</label>
-
-            <input class="w3-radio" type="radio" name="gender" value="female">
-            <label style="padding:10px 15px 0px 5px;">7d</label>
-
-            <input class="w3-radio" type="radio" name="gender" value="">
-            <label style="padding:10px 15px 0px 5px;">15d</label>
-        </div> -->
         <!-- <span class="w3-right w3-xlarge">
             <span style="margin-bottom:15px;">5 day</span>
             <i class="fa fa-toggle-on w3-xxlarge" style="margin:8px 10px 0px 0px;" aria-hidden="true"></i>
@@ -55,6 +47,17 @@
         <!-- <i class="fa fa-search-minus w3-right w3-xlarge" style="margin:8px 10px 0px 0px;" aria-hidden="true"></i>
         <i class="fa fa-search-plus w3-right w3-xlarge" style="margin:8px 10px 0px 0px;" aria-hidden="true"></i> -->
     </div>
+
+    <!-- <div class="w3-center _w3-hide-small" style="margin-top:10px;_display:flex;">
+        <input class="w3-radio" type="radio" name="gender" value="male" checked>
+        <label style="padding:10px 15px 0px 5px;">3d</label>
+
+        <input class="w3-radio" type="radio" name="gender" value="female">
+        <label style="padding:10px 15px 0px 5px;">7d</label>
+
+        <input class="w3-radio" type="radio" name="gender" value="">
+        <label style="padding:10px 15px 0px 5px;">15d</label>
+    </div> -->
 
     <!-- <iframe _width="650" _height="450" style="padding-top:25px;margin-left:2%;width:96%;height:500px;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=in&metricTemp=°F&metricWind=mph&zoom=11&overlay=radar&product=radar&level=surface&lat=42.628894&lon=-82.618160&detailLat=42.628894&detailLon=-82.618160&detail=true&message=true" frameborder="0"></iframe> -->
     <div id="content-map">
@@ -70,6 +73,7 @@
     </div>
     <div id="content-detail" style="display:none;">
         <div id="chart-boxplot" class="w3-container" style="margin-top:20px;width:98%;"></div>
+        <div id="chart-overview" class="w3-container" style="margin-top:20px;width:98%;"></div>
         <!-- <div id="chart-boxplot-wind" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
         <!-- <div id="chart" class="w3-container" style="margin-top:20px;width:98%;"></div> -->
 
@@ -288,7 +292,7 @@
                 hour: date.getHours(),
             };
         }
-        let html = `${json2.temp}° | ${json2.phrase_32char} | ${json2.gust ? json2.wspd + ' - ' + json2.gust : json2.wspd} mph ${json2.wdir_cardinal}`;
+        let html = `<img height=30 src="${getWeatherIcon(json2.icon_code, json2.phrase_22char, json2)}"/> ${json2.temp}° | ${json2.phrase_32char} | ${json2.gust ? json2.wspd + ' - ' + json2.gust : json2.wspd} mph ${json2.wdir_cardinal}`;
         document.getElementById('current_conditions').innerHTML = html;
         document.getElementById('datetime').innerHTML = new Date().toLocaleString('en-US', {
             timeZone: 'America/New_York',
@@ -506,7 +510,7 @@
         // console.log('annotations', annotations);
 
         // /** FILTER NO OF DAYS */
-        const num_days = isMobile() ? 7 : 15;
+        const num_days = isMobile() ? 5 : 15;
         json = json.slice(0, num_days);
         hour_range = hour_range.slice(0, num_days * 24);
         wind_range = wind_range.slice(0, num_days * 24);
@@ -564,7 +568,7 @@
                     series_data_precip.push({
                         x: [hour.dow.substring(0, 3).toUpperCase(), `${date.month}/${date.day}`],
                         // y: round(json[index].qpf * 25, 1),
-                        y: round(json3.filter((v, i2)=>i2 >= i - 10 && i2 <= i).reduce((acc, v) => acc + (v.qpf / 1.5 * 100), 0), 1),
+                        y: round(json3.filter((v, i2) => i2 >= i - 10 && i2 <= i).reduce((acc, v) => acc + (v.qpf / 1.5 * 100), 0), 1),
                     });
                 }
             }
@@ -572,30 +576,10 @@
         console.log(series_data);
         options = JSON.parse(JSON.stringify(chart_boxplot_options));
         options.series = [];
-        options.series.push({
-            name: 'Temp Range',
-            type: 'boxPlot',
-            // color: '#fff',
-            data: series_data
-        });
-        options.series.push({
-            name: 'Wind',
-            type: 'line',
-            color: '#fff',
-            data: series_data_wind
-        });
-        options.series.push({
-            name: 'Sun',
-            type: 'area',
-            color: '#ffff0035',
-            data: series_data_clouds
-        });
-        options.series.push({
-            name: 'Rain',
-            type: 'bar',
-            color: '#669999',
-            data: series_data_precip
-        });
+        options.series.push({ name: 'Temp Range', type: 'boxPlot', data: series_data });
+        options.series.push({ name: 'Wind', type: 'line', color: '#fff', data: series_data_wind });
+        options.series.push({ name: 'Sun', type: 'area', color: '#ffff0035', data: series_data_clouds });
+        options.series.push({ name: 'Rain', type: 'bar', color: '#669999', data: series_data_precip });
         // delete options.yaxis.min;
         // delete options.yaxis.max;
         var chart = new ApexCharts(document.querySelector("#chart-boxplot"), options);
@@ -721,7 +705,7 @@
         options.series = [];
         options.series.push({
             type: 'area',
-            name: 'Sun %',
+            name: 'Cloud %',
             data: []
         }, {
             type: 'area',
