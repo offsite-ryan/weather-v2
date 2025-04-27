@@ -293,7 +293,8 @@
             };
         }
         let html = `<img height=30 src="${getWeatherIcon(json2.icon_code, json2.phrase_22char, json2)}"/> ${json2.temp}° | ${json2.phrase_32char} | ${json2.gust ? json2.wspd + ' - ' + json2.gust : json2.wspd} mph ${json2.wdir_cardinal}`;
-        html += ` <span style='display:inline-block;font-size:20px;transform:rotate(${json2.wdir}deg);'>&#11167;</span>`
+        // html += ` <span style='display:inline-block;font-size:20px;transform:rotate(${json2.wdir}deg);'>&#11167;</span>`
+        html += ` <span style='display:inline-block;font-size:20px;transform:rotate(${json2.wdir}deg);'>&darr;</span>`
         document.getElementById('current_conditions').innerHTML = html;
         document.getElementById('datetime').innerHTML = new Date().toLocaleString('en-US', {
             timeZone: 'America/New_York',
