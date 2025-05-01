@@ -295,7 +295,7 @@
         document.title = `${json2.temp}° ${json2.phrase_32char}`;
         let html = `<img height=30 src="${getWeatherIcon(json2.icon_code, json2.phrase_22char, json2)}"/> ${json2.temp}° | ${json2.phrase_32char} | ${json2.gust ? json2.wspd + ' - ' + json2.gust : json2.wspd} mph ${json2.wdir_cardinal}`;
         // html += ` <span style='display:inline-block;font-size:20px;transform:rotate(${json2.wdir}deg);'>&#11167;</span>`
-        html += ` <span style='display:inline-block;font-size:20px;transform:rotate(${json2.wdir}deg);'>&darr;</span>`
+        html += ` <span style='display:inline-block;font-size:20px;margin-left:10px;margin-top:10px;transform:rotate(${json2.wdir}deg);'>&darr;</span>`
         document.getElementById('current_conditions').innerHTML = html;
         document.getElementById('datetime').innerHTML = new Date().toLocaleString('en-US', {
             timeZone: 'America/New_York',
@@ -850,7 +850,7 @@
                 </br>${forecast.narrative}
                 </br><div style="margin-left:10px;"><b class="" style="color:#34d5eb;">AM</b> ${forecast.day ? forecast.day.narrative : ''}</div>
                 <div style="margin-left:10px;"><b class="" style="color:#34d5eb;">PM</b> ${forecast.night.narrative}</div>
-                <!--</br><div style="margin-left:10px;"><b class="" style="color:#34d5eb;"></b> <img height=30 src="${getWeatherIcon(forecast.day.icon_code, forecast.day.phrase_22char, forecast)}"/> ${forecast.day ? forecast.day.narrative : ''}</div>
+                <!--</br><div style="margin-left:10px;"><b class="" style="color:#34d5eb;"></b> <img height=30 src="${getWeatherIcon(forecast.day?.icon_code, forecast.day?.phrase_22char, forecast)}"/> ${forecast.day ? forecast.day.narrative : ''}</div>
                 <div style="margin-left:10px;"><b class="" style="color:#34d5eb;"></b> <img height=30 src="${getWeatherIcon(forecast.night.icon_code, forecast.night.phrase_22char, forecast)}"/> ${forecast.night.narrative}</div>-->
                 </p>
                 `;
